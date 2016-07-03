@@ -1,0 +1,157 @@
+package net.bangbao.adapter;
+
+import java.util.List;
+
+import net.bangbao.R;
+import net.bangbao.base.BaseApiClient;
+import net.bangbao.common.Ids;
+import net.bangbao.dao.AgentListApi.AgentInfo;
+import net.bangbao.dao.ConsultMessApi;
+import net.bangbao.network.AgentApiClient;
+import net.bangbao.network.RequestManager;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.android.volley.Response;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
+
+public class ConsultAdapter extends BaseAdapter {
+
+	private List<AgentInfo> infoList;
+	private Context mContext;
+
+	public ConsultAdapter(Context context, List<AgentInfo> list) {
+		mContext = context;
+		this.infoList = list;
+	}
+
+	@Override
+	public int getCount() {
+		return infoList.size();
+	}
+
+	@Override
+	public Object getItem(int position) {
+		return infoList.get(position);
+	}
+
+	@Override
+	public long getItemId(int position) {
+		return position;
+	}
+
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+
+		ViewHolder holder = null;
+		if (convertView == null) {
+			convertView = LayoutInflater.from(mContext).inflate(
+					R.layout.look_consult_list_item, null);
+			holder = new ViewHolder();
+			holder.name = (TextView) convertView.findViewById(R.id.name);
+			holder.attem = (TextView) convertView.findViewById(R.id.num_focus);
+			holder.comm = (TextView) convertView.findViewById(R.id.comm);
+			holder.mSexIV = (ImageView) convertView.findViewById(R.id.sex_iv);
+			holder.edu = (TextView) convertView.findViewById(R.id.xueli);
+			holder.mPortraitIV = (ImageView) convertView.findViewById(R.id.image);
+			convertView.setTag(holder);
+		} else {
+			holder = (ViewHolder) convertView.getTag();
+		}
+
+		AgentInfo info = infoList.get(position);
+		holder.name.setText(info.nick_nm);
+		holder.attem.setText(String.valueOf(info.atte_num));
+		
+		holder.comm.setText(Ids.getComm(info.co_id));
+		holder.edu.setText(Ids.getEdu(info.edu_id));
+		
+		if (Ids.getSex(info.sex).equals("男")) {
+			holder.mSexIV.setImageResource(R.drawable.male);
+		}else if(Ids.getSex(info.sex).equals("女")){
+			holder.mSexIV.setImageResource(R.drawable.female);
+		}else{
+			holder.mSexIV.setImageResource(R.drawable.nosex);
+		}
+		
+		// 防止图片错位的处理,tag和URL绑定
+		loadImage(info.user_id, holder.mPortraitIV);
+
+		return convertView;
+	}
+
+	class ViewHolder {
+		TextView name;
+		TextView comm;
+		TextView attem;
+		TextView edu;
+		ImageView mPortraitIV;
+		ImageView mSexIV;
+		
+	}
+
+	// TODO 这里没有规范，应该放在network包里面
+	private void loadImage(int user_id, final ImageView imageView) {
+
+		new AgentApiClient().getConsultDetail(user_id, null,
+				ConsultMessApi.class,
+				new BaseApiClient.CallBack<ConsultMessApi>() {
+
+					@Override
+					public void success(ConsultMessApi api) {
+						imageView.setTag(api.getImage_url());
+						// 预设图片
+						imageView.setImageResource(R.drawable.app_logo);
+
+						Log.d("Image_url", "Image_url--" + api.getImage_url());
+
+						if (api.getImage_url() != null
+								&& api.getImage_url() != "") {
+							// 这里还要判断url的合法性，符合http://开始
+							if (api.getImage_url().startsWith("http://")) {
+								// 设置头像
+								loadBitmap(api.getImage_url(), imageView);
+							}
+
+						}
+					}
+
+					@Override
+					public void fail(String error) {
+
+					}
+				}
+
+		);
+
+	}
+
+	private void loadBitmap(final String bitmapUrl, final ImageView imageView) {
+		ImageRequest imageRequest = new ImageRequest(bitmapUrl,
+				new Response.Listener<Bitmap>() {
+
+					@Override
+					public void onResponse(Bitmap bitmap) {
+						imageView.setImageBitmap(bitmap);
+					}
+				}, 72, 72, null, new ErrorListener() {
+
+					@Override
+					public void onErrorResponse(VolleyError error) {
+						// 没有效果
+						Log.d("VolleyError", error.toString());
+						error.printStackTrace();
+					}
+				});
+		RequestManager.getInstance().addRequest(imageRequest, null);
+	}
+}

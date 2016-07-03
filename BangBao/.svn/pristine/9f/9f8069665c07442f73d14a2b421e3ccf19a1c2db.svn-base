@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/net.bangbao"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#b0000000"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/mServerLogin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp"
+                android:text="分享给我的朋友"
+                android:textColor="#3995e1"
+                />
+
+            <LinearLayout 
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal">
+                
+                <LinearLayout 
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
+                    android:layout_weight="1.0"
+                    android:gravity="center">
+                     <net.bangbao.widget.CircleImage
+                         android:layout_width="60dp"
+                         android:layout_height="60dp"
+                         android:src="@drawable/pengyouquan_share"
+                         android:id="@+id/pengyouquan"/>
+                </LinearLayout>
+               
+                <LinearLayout 
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
+                    android:layout_weight="1.0"
+                    android:gravity="center">
+                     <net.bangbao.widget.CircleImage
+                         android:layout_width="60dp"
+                         android:layout_height="60dp"
+                         android:src="@drawable/weichat_share"
+                         android:id="@+id/weixin"/>
+                </LinearLayout>
+                <LinearLayout 
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
+                    android:layout_weight="1.0"
+                    android:gravity="center">
+                     <net.bangbao.widget.CircleImage
+                         android:layout_width="60dp"
+                         android:layout_height="60dp"
+                         android:src="@drawable/qq_share"
+                         android:id="@+id/qq"/>
+                </LinearLayout>
+                <LinearLayout 
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
+                    android:layout_weight="1.0"
+                    android:gravity="center">
+                     <net.bangbao.widget.CircleImage
+                         android:layout_width="60dp"
+                         android:layout_height="60dp"
+                         android:src="@drawable/weibo_share"
+                         android:id="@+id/weibo"/>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="15dp"
+            android:orientation="vertical" >
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:paddingTop="8dp"
+                android:textColor="#3995e1"
+                android:id="@+id/bt_cancel"
+                android:text="取消"
+                android:background="@null"
+                android:layout_marginBottom="10dp"
+                />
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

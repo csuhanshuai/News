@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 资讯顶部导航栏的字体选中颜色 -->
+    <color name="blue_title">#3384ff</color>
+
+    <!-- 新闻列表的标题颜色 -->
+    <color name="news_title_black">#4b4b4c</color>
+
+    <!-- 新闻列表的来源,时间文字颜色 -->
+    <color name="news_time_origin_gray">#b2b2b2</color>
+    <color name="login_edittext_background_blue">#d3ecf8</color>
+
+    <!-- 浅蓝色字体 -->
+    <color name="little_blue">#3384ff</color>
+    <color name="complete_bg">#4875d4</color>
+    <color name="white">#FFFFFF</color> <!-- 白 -->
+    <color name="black">#000000</color>
+    <color name="gray_title">#666666</color>
+    <color name="gray">#808080</color>
+    <color name="red">#FF0000</color>
+    <color name="gold">#FFD700</color>
+    <color name="yellow">#FFFF00</color>
+    <color name="green">#008000</color>
+    <color name="blue">#0000FF</color>
+    <color name="purple">#800080</color>
+    <color name="pink">#FFC0CB</color>
+    <color name="orange">#FFA500</color>
+    <color name="lemonyellow">#FFFACD</color>
+    <color name="graywhite">#F5F5F5</color>
+    <color name="grayslate">#708090</color>
+    <color name="lightblue">#0083FF</color>
+    <color name="full_transparent">#00000000</color>
+    <color name="half_transparent">#aa000000</color>
+    <color name="bright_foreground_light">#ff000000</color>
+    <color name="bright_foreground_light_inverse">#ffffffff</color>
+    <color name="bright_foreground_light_disabled">#80000000</color>
+    <color name="dim_foreground_light">#808080</color>
+    <color name="dim_foreground_light_disabled">#80323232</color>
+    <color name="dim_foreground_light_inverse">#ff006eaa</color>
+    <color name="dim_foreground_light_inverse_disabled">#80bebebe</color>
+    <color name="head_text">#0e5986</color>
+    <color name="author_text">#0e5986</color>
+    <color name="face_bg">#eef1f4</color>
+    <color name="frame_button_text_nor">#033a5c</color>
+    <color name="frame_button_text_select">#FFFFFF</color>
+    <color name="tab_selected_bg">#C4E1E1</color>
+    <color name="register_text_back">#aecad9</color>
+    <color name="register_text_color">#595654</color>
+    <color name="tab_unselect_text">#666666</color>
+    <color name="tab_select_text">#3384ff</color>
+    <color name="tab_line">#F5F6F6</color>
+    <color name="radio_button_selected_color">#ff3384ff</color>
+    <color name="radio_button_unselected_color">@android:color/transparent</color>
+    <!-- 下拉刷新界面中最后更新时间的文字色 -->
+    <color name="consult_listview_bg">#e8eaea</color>
+    
+    <color name="share_pop_text">#666666</color>
+    
+    <color name="square_blue_bg">#6EC0E9</color>
+
+</resources>

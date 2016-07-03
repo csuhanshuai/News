@@ -1,0 +1,172 @@
+package net.bangbao.ui;
+
+import net.bangbao.AppConfig;
+import net.bangbao.AppManager;
+import net.bangbao.R;
+import net.bangbao.UserConfig;
+import net.bangbao.base.BaseActivity;
+import net.bangbao.common.UIHelper;
+import net.bangbao.dao.VersionMessApi;
+import net.bangbao.network.ApiClient;
+import net.bangbao.service.UpdateService;
+import android.app.AlertDialog;
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
+/*
+ * 设置
+ */
+public class SettingActivity extends BaseActivity {
+	
+	private Button quit;
+	public int customId;
+	private UserConfig userConfig;
+	private RelativeLayout re;
+	private ImageView update_on,update_off;
+	private String url;
+	private AlertDialog ad;
+	
+	@Override
+	protected void onCreate(Bundle arg0) {
+		super.onCreate(arg0);
+		setContentView(R.layout.setting);
+		initViews();
+	}
+
+	private void initViews() {
+		userConfig = AppConfig.getUser();
+		re = (RelativeLayout) findViewById(R.id.go_back2);
+		re.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				onBackPressed();
+			}
+		});
+		Log.d("bb", "id "+userConfig.getUserId()+" "+ userConfig.getUserToken());
+		RelativeLayout ll = (RelativeLayout)findViewById(R.id.new_message);
+		ll.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(SettingActivity.this,NewMessageActivity.class);
+				startActivity(intent);
+			}
+		});
+		
+		final RelativeLayout ll3 = (RelativeLayout)findViewById(R.id.check_version);
+		ll3.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				new ApiClient().getVersion(this, VersionMessApi.class,
+						new ApiClient.CallBack<VersionMessApi>(){
+
+							@Override
+							public void success(VersionMessApi api) {
+								if(api.getRet_cd()==0){
+									Log.d("SettingActivity", "从服务器获取的系统版本号："
+											+ api.getSoft_ver());
+									// 从服务器获得的版本号
+									String versionFromServer = api
+											.getSoft_ver();
+
+									PackageInfo packInfo = null;
+									try {
+										packInfo = getPackageManager()
+												.getPackageInfo(
+														getPackageName(), 0);
+									} catch (NameNotFoundException e) {
+										e.printStackTrace();
+									}
+									String versionFromClient = packInfo.versionName;
+									Log.d("SettingActivity", "从系统获取的系统版本号："
+											+ versionFromClient);
+									url = api.getUrl();
+									// 判断从系统获取到的版本号与
+									if (Float.parseFloat(versionFromServer) > Float
+											.parseFloat(versionFromClient)) {
+										ll3.setClickable(false);
+										//弹出对话框判断是否要下载
+										LinearLayout lay = (LinearLayout) SettingActivity.this.getLayoutInflater().inflate(R.layout.system_update, null);
+										ad = new AlertDialog.Builder(SettingActivity.this).create();
+										ad.setView(lay, 0, 0, 0, 0);
+										ad.show();
+										update_on = (ImageView)lay.findViewById(R.id.update_on);
+										update_on.setOnClickListener(new OnClickListener() {
+											
+											@Override
+											public void onClick(View v) {
+												// 下载
+												Intent intent = new Intent(
+														SettingActivity.this,
+														UpdateService.class);
+												intent.putExtra("Key_App_Name", "帮保");
+												intent.putExtra("Key_Down_Url",
+														url);
+												startService(intent);
+												ad.dismiss();
+												ll3.setClickable(true);
+											}
+										});
+										update_off = (ImageView)lay.findViewById(R.id.update_off);
+										update_off.setOnClickListener(new OnClickListener() {
+											
+											@Override
+											public void onClick(View v) {
+												ad.dismiss();
+											}
+										});
+
+									} else {
+										Toast.makeText(SettingActivity.this,
+												"已经是最新版本！", 300).show();
+									}
+								}
+							}
+
+							@Override
+							public void fail(String error) {
+								UIHelper.showToastMessage(
+										"当前网络有问题！");
+							}
+					
+				});
+			}
+		});
+		
+		RelativeLayout ll2 = (RelativeLayout)findViewById(R.id.about);
+		ll2.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(SettingActivity.this,AboutActivity.class);
+				startActivity(intent);
+			}
+		});
+		quit = (Button)findViewById(R.id.quit);
+		quit.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				AppConfig.loginout();
+				Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+				startActivity(intent);
+//				AppManager.getAppManager().AppExit();
+			}
+		});
+	}
+	
+
+
+
+}

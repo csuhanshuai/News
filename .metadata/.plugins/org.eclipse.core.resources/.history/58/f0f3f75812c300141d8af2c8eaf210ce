@@ -1,0 +1,186 @@
+package net.bangbao.ui;
+
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.json.JSONException;
+
+import com.android.volley.Request.Method;
+import com.android.volley.AuthFailureError;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
+import com.android.volley.toolbox.StringRequest;
+
+import net.bangbao.AppConfig;
+import net.bangbao.R;
+import net.bangbao.R.id;
+import net.bangbao.R.layout;
+import net.bangbao.R.string;
+import net.bangbao.adapter.OnCheckedListener;
+import net.bangbao.adapter.TabAdapter;
+import net.bangbao.base.BaseActivity;
+import net.bangbao.common.DeviceUtil;
+import net.bangbao.common.UIHelper;
+import net.bangbao.dao.BaseApi;
+import net.bangbao.dao.CityApi;
+import net.bangbao.dao.CityApi.City;
+import net.bangbao.dao.NewsApi;
+import net.bangbao.fragment.AdvertiseFragment;
+import net.bangbao.fragment.CustomerMineFragment;
+import net.bangbao.fragment.InsuranceFragment;
+import net.bangbao.fragment.SettleFragment;
+import net.bangbao.fragment.MessageFragment;
+import net.bangbao.fragment.ConsultFragment;
+import net.bangbao.fragment.MineFragment;
+import net.bangbao.http.ApiClient;
+import net.bangbao.http.BangBaoApi;
+import net.bangbao.sercvice.RongYunService;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
+import android.widget.ImageView;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+
+/*
+ * author:mosl
+ * description：主tab界面
+ */
+public class MainActivity extends BaseActivity implements View.OnClickListener{
+	
+	private long exitTime;
+	private RadioGroup rgs;
+	public List<Fragment> fragments = new ArrayList<Fragment>();
+	public OnCheckedListener checkedListener;
+	private TabAdapter tabAdapter;
+	private View tab1,tab2,tab3,tab4,tab5;
+	
+	//圆的那个
+	private View framCircle;
+	private TextView textCount;
+	
+	public static final String MSGACTION = "net.bangbao.action.msg.count";
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE); 
+		setContentView(R.layout.activity_main);
+        fragments.add(new MessageFragment());
+        fragments.add(new AdvertiseFragment());
+        fragments.add(new InsuranceFragment());
+        fragments.add(new ConsultFragment());
+//        fragments.add(new MineFragment());
+
+        tabAdapter = new TabAdapter(this, fragments, R.id.tab_content);
+        checkedListener = tabAdapter.getOnChangedListener();
+        
+        tab1 = findViewById(R.id.tab_rb_1);
+        tab2 = findViewById(R.id.tab_rb_2);
+        tab3 = findViewById(R.id.tab_rb_3);
+        tab4 = findViewById(R.id.tab_rb_4);
+        tab5 = findViewById(R.id.tab_rb_5);
+        
+        tab1.setOnClickListener(this);
+        tab2.setOnClickListener(this);
+        tab3.setOnClickListener(this);
+        tab4.setOnClickListener(this);
+//        tab5.setOnClickListener(this);
+        if(!AppConfig.isLogin()){
+	        tab5.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					startActivity(new Intent(MainActivity.this,LoginActivity.class));
+				}
+			});
+        }else if(AppConfig.isLogin()&&AppConfig.getUser().getType() == 2){
+        	fragments.add(new MineFragment());
+        	tab5.setOnClickListener(this);
+        }else if(AppConfig.isLogin()&&AppConfig.getUser().getType() == 1){
+        	fragments.add(new CustomerMineFragment());
+        	tab5.setOnClickListener(this);
+        }
+        
+        
+        framCircle = findViewById(R.id.fram_circle);
+        textCount = (TextView)findViewById(R.id.text_count);
+        
+        //启动融云 服务
+        if(AppConfig.IMClient != null)
+        startService(new Intent(this,RongYunService.class));
+        
+        IntentFilter intentFiler = new IntentFilter();
+        intentFiler.addAction(MSGACTION);
+        registerReceiver(msgReceiver, intentFiler);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+	}
+	 public void exitApp(){
+		
+	    if (System.currentTimeMillis() - this.exitTime > 2000L){
+	      UIHelper.showToastMessage( getResources().getString(R.string.quit));
+	      this.exitTime = System.currentTimeMillis();
+	      return;
+	    }
+	    finish();
+	    System.exit(0);
+	  }
+	public boolean onKeyDown(int paramInt, KeyEvent paramKeyEvent){
+	    if (paramInt == 4)
+	      exitApp();
+	    return false;
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.tab_rb_1:
+			checkedListener.onCheckedChanged(0);
+			break;
+		case R.id.tab_rb_2:
+			checkedListener.onCheckedChanged(1);
+			break;
+		case R.id.tab_rb_3:
+			checkedListener.onCheckedChanged(2);
+			break;
+		case R.id.tab_rb_4:
+			checkedListener.onCheckedChanged(3);
+			break;
+		case R.id.tab_rb_5:
+			checkedListener.onCheckedChanged(4);
+			break;
+		}
+	}
+	
+	private BroadcastReceiver msgReceiver = new BroadcastReceiver(){
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			
+			framCircle.setVisibility(View.VISIBLE);
+			textCount.setText(String.valueOf(AppConfig.msgCount));
+		}
+	};
+}

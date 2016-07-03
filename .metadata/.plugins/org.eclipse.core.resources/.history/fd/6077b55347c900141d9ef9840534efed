@@ -1,0 +1,97 @@
+package net.bangbao.common;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import net.bangbao.AppInit;
+import net.bangbao.R;
+
+/*
+ * id映射
+ */
+public class Ids {
+
+	public static String[] comms;
+	public static String[] edus;
+	public static String[] sexs;
+	public static String[] provices;
+	
+	private static List<String> listComms;
+	private static List<String> listSexs;
+	private static List<String> listPassAnswer;
+	
+	public static List<String> getCommlist(){
+		
+		if(listComms == null){
+			listComms = new ArrayList<>();
+			if(comms == null)
+				comms = AppInit.getContext().getResources().
+				getStringArray(R.array.companys);
+			for(int i=0;i<comms.length;i++){
+				listComms.add(comms[i]);
+			}
+		}
+		return listComms;
+	}
+	
+	public static List<String> getPassAnswer(){
+		
+		if(listPassAnswer == null){
+			listPassAnswer = new ArrayList<>();
+			String[] answers = AppInit.getContext().getResources().
+			getStringArray(R.array.questions);
+			
+			for(int i=0;i<answers.length ;i++){
+				listPassAnswer.add(answers[i]);
+			}
+		}
+		return listPassAnswer;
+	}
+	
+	//公司id 和字符串 映射
+	public static final String getComm(int commid){
+		if(comms == null){
+			comms = AppInit.getContext().getResources().getStringArray(R.array.companys);
+		}
+		if(commid >=0 && commid<comms.length){
+			return comms[commid -1];
+		}
+		return "其他公司";
+	}
+	/*
+	 * 学历映射
+	 */
+	public static final String getEdu(int eduId){
+		if(edus == null){
+			edus = AppInit.getContext().getResources().getStringArray(R.array.education);
+		}
+		if(eduId >= 0 && eduId < edus.length){
+			return edus[eduId -1];
+		}
+		return "其他学历";
+	}
+	/*
+	 * 性别映射
+	 */
+	public static final String getSex(int sex){
+		if(sexs == null){
+			sexs = AppInit.getContext().getResources().getStringArray(R.array.sex);
+		}
+		if(sex >=0 && sex < sexs.length){
+			return sexs[sex];
+		}
+		return "未知";
+	}
+	/*
+	 * 省份id映射
+	 */
+	public static final String getProvice(int provice){
+		if(provices == null){
+			provices = AppInit.getContext().getResources().getStringArray(R.array.provice);
+		}
+		if(provice >= 0 && provice <provices.length){
+			return provices[provice];
+		}
+		return "其他省份";
+	}
+}

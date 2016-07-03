@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- string 数组-->
+<resources>
+    <string-array name="provice">
+        <item>上海</item>
+        <item>江苏</item>
+	    <item>浙江</item>
+	    <item>安徽</item>
+	    <item>北京</item>
+	    <item>天津</item>
+	    <item>广东</item>
+	    <item>河北</item>
+	    <item>河南</item>
+	    <item>山东</item>
+	    <item>湖北</item>
+	    <item>湖南</item>
+	    <item>江西</item>
+	    <item>福建</item>
+	　     <item>四川</item>
+	    <item>重庆</item>
+	    <item>广西</item>
+	    <item>山西</item>
+	    <item>辽宁</item>
+	    <item>吉林</item>
+	    <item>黑龙江</item>
+	　    <item>贵州</item>
+	    <item>陕西</item>
+	    <item>云南</item>
+	    <item>内蒙古</item>
+	    <item>甘肃</item>
+	    <item>青海</item>
+	    <item>宁夏</item>
+	    <item>新疆</item>
+	    <item>海南</item>
+	   <item>西藏</item>
+	   <item>香港</item>
+	   <item>澳门</item>
+       <item>台湾</item>
+       </string-array>
+       <string-array name="money_list">
+        <item>3万至8万</item>
+        <item>8万至15万</item>
+        <item>15万至30万</item>
+        <item>30万至100万</item>
+        <item>100万以上</item>
+    </string-array>   
+    <string-array name="companys">
+        <item>英国保诚</item>
+        <item>AIA友邦</item>
+        <item>AXA安盛</item>
+        <item>宏利</item>
+        <item>富卫</item>
+    </string-array>
+    <string-array name="questions">
+        <item>您的父亲叫什么名字？ </item>
+        <item>您最要好的朋友是谁？</item>
+        <item>您的出生地在哪里？</item>
+    </string-array>
+    <string-array name="sex">
+        <item>男</item>
+        <item>女</item>
+    </string-array>
+    <string-array name="attend_watch">
+        <item>是</item>
+        <item>否</item>
+    </string-array>
+    <string-array name="education">
+        <item>初中</item>
+        <item>高中</item>
+        <item>中专</item>
+        <item>大专</item>
+        <item>本科</item>
+        <item>硕士</item>
+        <item>博士</item>
+    </string-array>
+</resources>

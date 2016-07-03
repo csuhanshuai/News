@@ -1,0 +1,55 @@
+package net.bangbao.adapter;
+
+import java.util.List;
+
+import net.bangbao.R;
+import net.bangbao.dao.ConsultApi.ConsultInfo;
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.TextView;
+
+
+public class ConsultAdapter extends BaseAdapter {
+
+	private TextView username;
+	private List<ConsultInfo> infos;
+	private Context context;
+	
+	public ConsultAdapter(List<ConsultInfo> list,Context context) {
+		this.infos = list;
+		this.context = context;
+	}
+	@Override
+	public int getCount() {
+		return infos.size();
+	}
+
+	@Override
+	public Object getItem(int position) {
+		return null;
+	}
+
+	@Override
+	public long getItemId(int position) {
+		return 0;
+	}
+
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		
+		ConsultInfo info = infos.get(position);
+		
+		if(convertView == null){
+			convertView = LayoutInflater.from(context).inflate(
+					R.layout.consult_item, null);
+			username = (TextView)convertView.findViewById(R.id.user);
+			
+			username.setText(info.getNick_nm());
+		}
+		return convertView;
+	}
+
+}

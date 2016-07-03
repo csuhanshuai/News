@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:background="@drawable/test2"
+    android:orientation="vertical" >
+    
+    <LinearLayout 
+        android:layout_width="wrap_content"
+        android:layout_height="300dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="60dp"
+        android:orientation="vertical">
+        
+         <TextView 
+            android:layout_width="260dp"
+            android:layout_height="25dp"
+            android:text="2.您结婚否?"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:layout_marginLeft="20dp"/>
+         
+         <LinearLayout 
+            android:layout_width="fill_parent"
+	        android:layout_height="30dp"
+	        android:layout_gravity="center"
+	        android:layout_marginTop="10dp"
+	        android:orientation="horizontal">
+	        
+         <RadioGroup 
+             android:id="@+id/rg1"
+             android:layout_width="fill_parent"
+             android:layout_height="30dp"
+             android:orientation="horizontal"
+             android:layout_gravity="center_horizontal">
+
+         <RadioButton
+             android:id="@+id/yes1"
+             android:text="是"
+             android:textColor="@color/black"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_marginLeft="60dp"
+              />
+         
+         
+          <RadioButton
+             android:id="@+id/no1"
+             android:text="否"
+             android:textColor="@color/black"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_marginLeft="60dp"
+             />
+          </RadioGroup>
+         
+         </LinearLayout>
+         
+         <TextView 
+             android:id="@+id/id_pr1"
+            android:layout_width="260dp"
+            android:layout_height="25dp"
+            android:text="您是否有小孩?"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:visibility="gone"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="5dp"/>
+         
+         <LinearLayout 
+            android:layout_width="fill_parent"
+	        android:layout_height="30dp"
+	        android:layout_gravity="center"
+	        android:layout_marginTop="5dp"
+	        android:orientation="horizontal">
+	        
+         <RadioGroup 
+             android:layout_width="fill_parent"
+             android:layout_height="30dip"
+             android:id="@+id/rg2"
+             android:visibility="gone"
+             android:orientation="horizontal"
+             android:layout_gravity="center_horizontal">
+
+         <RadioButton
+             android:id="@+id/yes2"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_marginLeft="60dp"
+             android:text="是"
+             android:textColor="@color/black" />
+         
+         
+          <RadioButton
+             android:id="@+id/no2"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_marginLeft="60dp"
+             android:text="否"
+             android:textColor="@color/black" />
+          </RadioGroup>
+         
+         </LinearLayout>
+         
+         <TextView 
+            android:id="@+id/id_pr2"
+            android:layout_width="260dp"
+            android:layout_height="25dp"
+            android:text="小孩的年龄是?"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:visibility="gone"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="5dp"/>
+         
+         <LinearLayout 
+            android:layout_width="fill_parent"
+	        android:layout_height="30dp"
+	        android:layout_gravity="center"
+	        android:layout_marginTop="10dp"
+	        android:orientation="horizontal">
+         
+         <EditText 
+             android:id="@+id/edittext"
+             android:visibility="gone"
+             android:layout_width="60dp"
+             android:layout_height="30dp"
+             android:layout_marginLeft="60dp"
+             android:background="#C6E6F6"
+              />
+         
+         <TextView 
+            android:id="@+id/id_pr3"
+            android:visibility="gone"
+            android:layout_width="20dp"
+            android:layout_height="30dp"
+            android:text="岁"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:layout_marginLeft="5dp"/>
+         
+         </LinearLayout>
+         
+         <Button 
+            android:id="@+id/id_next2"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/next"/>
+         
+    </LinearLayout>
+    
+
+</LinearLayout>

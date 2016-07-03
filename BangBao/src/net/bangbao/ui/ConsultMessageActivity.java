@@ -1,0 +1,1520 @@
+package net.bangbao.ui;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import net.bangbao.AppConfig;
+import net.bangbao.R;
+import net.bangbao.UserConfig;
+import net.bangbao.base.BaseActivity;
+import net.bangbao.base.BaseApi;
+import net.bangbao.common.Ids;
+import net.bangbao.common.UIHelper;
+import net.bangbao.dao.ConsultMessApi;
+import net.bangbao.dao.User.DeliverMessageStruct;
+import net.bangbao.dao.User.PasswordMessageStruct;
+import net.bangbao.network.ApiClient;
+import net.bangbao.network.RequestManager;
+import net.bangbao.network.UploadAgent;
+import net.bangbao.widget.CircleImage;
+import net.bangbao.widget.SelectPicPopupWindow;
+import net.bangbao.widget.SpinnerDropDown;
+import net.bangbao.widget.SpinnerDropDown.IOnClickItemListener;
+
+import org.json.JSONObject;
+
+import android.app.ActionBar.LayoutParams;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Base64;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow.OnDismissListener;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+public class ConsultMessageActivity extends BaseActivity implements View.OnClickListener {
+    private TextView username, cons;
+    private EditText englishname, contact;
+    //	private Spinner hometown;
+    private CircleImage picture;
+
+//    private EditText old_pwd, new_pwd, re_pwd;
+
+    private TextView sex3;
+    private TextView company;
+    private TextView hometown;
+    private TextView edu_id;
+    private int time1, time2;
+
+    private boolean isPost = false;
+
+    private String strBeforeRecommend = null;
+
+    private int mSexId = -1;
+    private int mComId = -1;
+    private int mEduId = -1;
+    private int mHomId = -1;
+
+    private Intent dataIntent = null;
+    private View view;
+
+    List<String> sex2;
+    List<String> com1;
+    List<String> edu1;
+    List<String> hom;
+
+    //自定义的弹出框类  
+    SelectPicPopupWindow menuWindow;
+
+    public Bitmap bi, photo;
+    public boolean isFromItent = false;
+    private UserConfig userConfig;
+    private String url;
+    private TextView button;
+    private EditText year, month, day;
+    private EditText year1, month1, day1, qua;
+    private EditText honour, thought;
+    private TextView toast;
+    DeliverMessageStruct del = new DeliverMessageStruct();
+    private RelativeLayout rel, rel1, rel2, rel3;
+
+    private SpinnerDropDown mSex;
+    private SpinnerDropDown mCom;
+    private SpinnerDropDown mEdu;
+    private SpinnerDropDown mHom;
+    //	private SpinnerDropDown spinnerDropDown;
+    private ImageView mSexArrow, mCompanyArrow, mEduArrow, mHometownArrow;
+
+    private RadioGroup rg;
+    private RadioButton rb1, rb2;
+    private boolean check;
+
+    private ImageView back;
+    private RelativeLayout r;
+    int k = 0;
+
+    //定义字段
+
+
+
+    public static final String[] constellationArr = {"摩羯座", "水瓶座", "双鱼座", "牡羊座", "金牛座", "双子座",
+            "巨蟹座", "狮子座", "处女座", "天秤座", "天蝎座", "射手座", "摩羯座"};
+
+    public static final int[] constellationEdgeDay = {20, 19, 21, 21, 21, 22, 23, 23, 23, 23, 22,
+            22};
+
+    @Override
+    protected void onCreate(Bundle arg0) {
+        super.onCreate(arg0);
+        setContentView(R.layout.consult_message);
+        userConfig = AppConfig.getUser();
+        Log.d("bb", "bb" + System.currentTimeMillis() / 1000);
+        initViews();
+        setup1();
+    }
+
+    public static class ConsultUser1 {
+        public static String eng1;
+        public static String ctt1;
+        public static String cert1;
+        public static String ins1;
+        public static String honor1;
+        public static String image_url1;
+        public static int in_watch1;
+        public static int sex1, co_id1, prov_id1, edu_id1;
+        public static long bgn_tmtp1;
+        public static String bday1;
+    }
+
+    public static class ConsultUser2 {
+        public static String eng2;
+        public static String ctt2;
+        public static String cert2;
+        public static String ins2;
+        public static String honor2;
+        public static int in_watch2;
+        public static String image_url2;
+        public static int sex2, co_id2, prov_id2, edu_id2;
+        public static long bgn_tmtp2;
+        public static String bday2;
+    }
+
+    private void initViews() {
+        r = (RelativeLayout) findViewById(R.id.go_back6);
+        r.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+        rg = (RadioGroup) findViewById(R.id.take);
+        rb1 = (RadioButton) findViewById(R.id.take_on);
+        rb2 = (RadioButton) findViewById(R.id.take_off);
+        rg.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                Drawable drawableCheck = getResources().getDrawable(R.drawable.bluecheck);
+                Drawable drawableUnCheck = getResources().getDrawable(R.drawable.blueuncheck);
+                drawableCheck.setBounds(0, 0, drawableCheck.getMinimumWidth(),
+                        drawableCheck.getMinimumHeight());
+                drawableUnCheck.setBounds(0, 0, drawableCheck.getMinimumWidth(),
+                        drawableCheck.getMinimumHeight());
+                if (checkedId == R.id.take_on) {
+                    check = true;
+                    rb1.setCompoundDrawables(drawableCheck, null, null, null);
+                    rb2.setCompoundDrawables(drawableUnCheck, null, null, null);
+                } else if (checkedId == R.id.take_off) {
+                    check = false;
+                    rb1.setCompoundDrawables(drawableUnCheck, null, null, null);
+                    rb2.setCompoundDrawables(drawableCheck, null, null, null);
+                }
+            }
+        });
+
+        sex2 = Ids.getSexs();
+        com1 = Ids.getCommlist();
+        edu1 = Ids.getEdulist();
+        hom = Ids.getProvlist();
+        userConfig = AppConfig.getUser();
+        rel = (RelativeLayout) findViewById(R.id.sex);
+        rel.setOnClickListener(this);
+        rel1 = (RelativeLayout) findViewById(R.id.company);
+        rel1.setOnClickListener(this);
+        rel2 = (RelativeLayout) findViewById(R.id.edu);
+        rel2.setOnClickListener(this);
+        rel3 = (RelativeLayout) findViewById(R.id.ori);
+        rel3.setOnClickListener(this);
+        username = (TextView) findViewById(R.id.username);
+        year = (EditText) findViewById(R.id.year1);
+        month = (EditText) findViewById(R.id.month1);
+        day = (EditText) findViewById(R.id.day1);
+        picture = (CircleImage) findViewById(R.id.photo);
+        sex3 = (TextView) findViewById(R.id.sex1);
+        mSexArrow = (ImageView) findViewById(R.id.sex_arrow);
+
+        company = (TextView) findViewById(R.id.com);
+        mCompanyArrow = (ImageView) findViewById(R.id.comp_arrow);
+
+        hometown = (TextView) findViewById(R.id.origin);
+        mHometownArrow = (ImageView) findViewById(R.id.origin_arrow);
+
+        edu_id = (TextView) findViewById(R.id.educ);
+        mEduArrow = (ImageView) findViewById(R.id.edu_arrow);
+
+
+//        old_pwd = (EditText) findViewById(R.id.old_pwd);
+//        new_pwd = (EditText) findViewById(R.id.new_pwd);
+//        re_pwd = (EditText) findViewById(R.id.confirm);
+        toast = (TextView) findViewById(R.id.toast);
+        toast.setVisibility(View.GONE);
+
+
+        view = findViewById(R.id.tupian);
+        view.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                //实例化SelectPicPopupWindow  
+                menuWindow = new SelectPicPopupWindow(ConsultMessageActivity.this, itemsOnClick);
+                //显示窗口  
+                menuWindow.setOutsideTouchable(true);
+                menuWindow.setFocusable(true);
+               
+               
+                // 有效果，popwindow打开，背景变半透明
+                backgroundAlpha(0.5f);
+                menuWindow.setOnDismissListener(new OnDismissListener() {
+
+                    @Override
+                    public void onDismiss() {
+                        backgroundAlpha(1f);
+                    }
+                });
+                menuWindow.showAtLocation(ConsultMessageActivity.this.findViewById(R.id.com),
+                        Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0); //设置layout在PopupWindow中显示的位置  
+            }
+        });
+
+        
+
+        year1 = (EditText) findViewById(R.id.year2);
+        //		month1 = (EditText) findViewById(R.id.month2);
+        //		day1 = (EditText) findViewById(R.id.day2);
+
+        qua = (EditText) findViewById(R.id.qualification);
+        honour = (EditText) findViewById(R.id.honour);
+        thought = (EditText) findViewById(R.id.thought);
+
+        cons = (TextView) findViewById(R.id.constellation);
+
+        button = (TextView) findViewById(R.id.complete1);
+
+//FIXME 点击完成按钮的判断条件
+        button.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                if (button.getText().equals("完成")) {
+                    if (isPost == true) {//是否更改头像
+
+                        new UploadAgent().uploadImage(getMyBitmap(), userConfig.getUserId(),
+                                userConfig.getUserToken(), new UploadAgent.IUploadCallBack() {
+
+                                    @Override
+                                    public void uploadSuess(String success) {
+                                        Map<String, Object> maps = getMapForJson(success);
+                                        url = (String) maps.get("url");
+                                        del.image_url = url;
+                                        //性别
+                                        int se = mSexId;
+                                        ConsultUser2.sex2 = se;
+                                        //										del.sex = se;
+                                        //英文名
+                                        //										englishname.addTextChangedListener(new TextWatcher() {
+                                        //											
+                                        //											@Override
+                                        //											public void onTextChanged(CharSequence s, int start, int before, int count) {
+                                        //												
+                                        //											}
+                                        //											
+                                        //											@Override
+                                        //											public void beforeTextChanged(CharSequence s, int start, int count,
+                                        //													int after) {
+                                        //												
+                                        //											}
+                                        //											
+                                        //											@Override
+                                        //											public void afterTextChanged(Editable s) {
+                                        //												
+                                        //											}
+                                        //										});
+                                        String eng = englishname.getText().toString().trim();
+                                        ConsultUser2.eng2 = eng;
+                                        //										del.nick_nm = eng;
+                                        //公司
+                                        int co = mComId;
+                                        ConsultUser2.co_id2 = co;
+                                        //										del.co_id = co;
+                                        //联系方式
+                                        String cont = contact.getText().toString().trim();
+                                        ConsultUser2.ctt2 = cont;
+                                        //										del.ctt = cont;
+                                        //省份ID
+                                        int hometown_id = mHomId;
+                                        ConsultUser2.prov_id2 = hometown_id;
+                                        //										del.prov_id = hometown_id;
+                                        //出生时间
+                                        String birth =
+                                                year.getText().toString().trim()
+                                                        + month.getText().toString().trim()
+                                                        + day.getText().toString().trim();
+                                        //										long time = TimeUtils.getTime(birth);
+                                        //										ConsultUser2.bday2 = time/1000;
+                                        if (birth == "")
+                                            ConsultUser2.bday2 = null;
+                                        else
+                                            ConsultUser2.bday2 = birth;
+                                        Log.d("ab", "bday2" + ConsultUser2.bday2);
+                                        //										del.bday_tmtp = time/1000;
+                                        //学历ID
+                                        int edu = mEduId;
+                                        ConsultUser2.edu_id2 = edu;
+                                        //										del.edu_id = edu;
+                                        //从业时间戳
+                                        String work = year1.getText().toString().trim();
+                                        time2 = Integer.parseInt(work);
+                                        Log.d("bb", "work " + work);
+                                        long work_time =
+                                                System.currentTimeMillis() / 1000 - 365 * 24 * 60
+                                                        * 60 * Integer.parseInt(work);
+                                        Log.d("bb", "bb " + work_time);
+                                        ConsultUser2.bgn_tmtp2 = work_time;
+                                        //										del.bgn_tmtp = work_time/1000;
+                                        //资格证号
+                                        String cert = qua.getText().toString().trim();
+                                        if (cert == "")
+                                            ConsultUser2.cert2 = null;
+                                        else
+                                            ConsultUser2.cert2 = cert;
+                                        Log.d("ab", "cert2" + ConsultUser2.cert2);
+                                        //										del.cert_no = cert;
+                                        //图像
+                                        //										String ur = url;
+                                        //										ConsultUser2.image_url2 = ur;
+                                        //										del.image_url = ur;
+                                        //保险感悟
+                                        String think = thought.getText().toString().trim();
+                                        if (think == "")
+                                            ConsultUser2.ins2 = null;
+                                        else
+                                            ConsultUser2.ins2 = think;
+                                        //										del.ins_say = think;
+                                        //所获荣誉
+                                        String honor = honour.getText().toString().trim();
+                                        if (honor == "")
+                                            ConsultUser2.honor2 = null;
+                                        else
+                                            ConsultUser2.honor2 = honor;
+                                        //										del.honor_say = honor;
+                                        //是否参加iWatch
+                                        if (check == true)
+                                            ConsultUser2.in_watch2 = 1;
+                                        else if (check == false) ConsultUser2.in_watch2 = 2;
+
+
+                                        //比较字段
+                                        if (!ConsultUser1.eng1.equals(ConsultUser2.eng2))
+                                            del.nick_nm = ConsultUser2.eng2;
+                                        else
+                                            del.nick_nm = null;
+                                        Log.d("bb",
+                                                "isOrnot"
+                                                        + ConsultUser1.eng1
+                                                                .equals(ConsultUser2.eng2));
+                                        if (ConsultUser1.sex1 != ConsultUser2.sex2)
+                                            del.sex = ConsultUser2.sex2;
+                                        else
+                                            del.sex = null;
+                                        Log.d("ab", "sex" + ConsultUser1.sex1 + " "
+                                                + ConsultUser2.sex2);
+                                        Log.d("ab", "ss" + del.sex);
+                                        if (ConsultUser1.co_id1 != ConsultUser2.co_id2)
+                                            del.co_id = ConsultUser2.co_id2;
+                                        else
+                                            del.co_id = null;
+                                        Log.d("ab", "co_id" + ConsultUser1.co_id1 + " "
+                                                + ConsultUser2.co_id2);
+                                        Log.d("ab", "com" + del.co_id);
+                                        if (!ConsultUser1.ctt1.equals(ConsultUser2.ctt2))
+                                            del.ctt = ConsultUser2.ctt2;
+                                        else
+                                            del.ctt = null;
+                                        if (ConsultUser1.prov_id1 != ConsultUser2.prov_id2)
+                                            del.prov_id = ConsultUser2.prov_id2;
+                                        else
+                                            del.prov_id = null;
+                                        if (!ConsultUser1.bday1.equals(ConsultUser2.bday2))
+                                            del.bday = ConsultUser2.bday2;
+                                        else
+                                            del.bday = null;
+                                        if (ConsultUser1.edu_id1 != ConsultUser2.edu_id2)
+                                            del.edu_id = ConsultUser2.edu_id2;
+                                        else
+                                            del.edu_id = null;
+                                        //判断从业时间戳
+                                        if (time1 != time2)
+                                            del.bgn_tmtp = ConsultUser2.bgn_tmtp2;
+                                        else
+                                            del.bgn_tmtp = null;
+                                        if (!ConsultUser1.cert1.equals( ConsultUser2.cert2))
+                                            del.cert_no = ConsultUser2.cert2;
+                                        else
+                                            del.cert_no = null;
+                                        
+                                        Log.d("ab", "cert=="+ConsultUser1.cert1+"=="+ConsultUser2.cert2);
+                                        if (!ConsultUser1.ins1.equals(ConsultUser2.ins2)  || ConsultUser1.ins1.equals(""))
+                                            del.ins_say = ConsultUser2.ins2;
+                                        else
+                                            del.ins_say = null;
+                                        if (!ConsultUser1.honor1.equals(ConsultUser2.honor2) 
+                                                || ConsultUser1.honor1.equals(""))
+                                            del.honor_say = ConsultUser2.honor2;
+                                        else
+                                            del.honor_say = null;
+                                        //										Log.d("bb", "url"+ConsultUser1.image_url1+ConsultUser2.image_url2);
+                                        //										if(!ConsultUser1.image_url1.equals(ConsultUser2.image_url2)||ConsultUser1.image_url1.equals(""))
+                                        //											del.image_url = ConsultUser2.image_url2;
+                                        //										else
+                                        //											del.image_url = null;
+                                        //										Log.d("ab", "del.image_url"+del.image_url);
+                                        if (ConsultUser1.in_watch1 != (ConsultUser2.in_watch2))
+                                            del.in_watch = ConsultUser2.in_watch2;
+                                        else
+                                            del.in_watch = null;
+                                        int ret = (Integer) maps.get("ret_cd");
+                                        String txt = (String) maps.get("ret_txt");
+                                        if (ret == 0) {
+                                            complete1();
+                                            isPost = false;
+                                        } else
+                                            UIHelper.showToastMessage(txt);
+                                        Log.d("bb", url);
+                                        Log.d("bb", "success" + success);
+                                    }
+
+                                    @Override
+                                    public void uploadFail(String error) {
+                                        Log.d("bb", "error" + error);
+                                        isPost = false;
+                                    }
+                                });
+                    } else {
+                        del.image_url = null;
+//新用户修改信息
+
+
+
+                        //性别
+                        int se = mSexId;
+                        ConsultUser2.sex2 = se;
+                        //							del.sex = se;
+                        //英文名
+                        //							englishname.addTextChangedListener(new TextWatcher() {
+                        //								
+                        //								@Override
+                        //								public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        //									
+                        //								}
+                        //								
+                        //								@Override
+                        //								public void beforeTextChanged(CharSequence s, int start, int count,
+                        //										int after) {
+                        //									
+                        //								}
+                        //								
+                        //								@Override
+                        //								public void afterTextChanged(Editable s) {
+                        //									
+                        //								}
+                        //							});
+                        String eng = englishname.getText().toString().trim();
+                        ConsultUser2.eng2 = eng;
+                        //							del.nick_nm = eng;
+                        //公司
+                        int co = mComId;
+                        ConsultUser2.co_id2 = co;
+                        //							del.co_id = co;
+                        //联系方式
+                        String cont = contact.getText().toString().trim();
+                        ConsultUser2.ctt2 = cont;
+                        //							del.ctt = cont;
+                        //省份ID
+                        int hometown_id = mHomId;
+                        ConsultUser2.prov_id2 = hometown_id;
+                        //							del.prov_id = hometown_id;
+                        //出生时间
+                        String birth =
+                                year.getText().toString().trim()
+                                        + month.getText().toString().trim()
+                                        + day.getText().toString().trim();
+                        //							long time = TimeUtils.getTime(birth);
+                        //							ConsultUser2.bday2 = time/1000;
+                        if (birth == "")
+                            ConsultUser2.bday2 = null;
+                        else
+                            ConsultUser2.bday2 = birth;
+                        Log.d("ab", "bday2" + ConsultUser2.bday2);
+                        //							del.bday_tmtp = time/1000;
+                        //学历ID
+                        int edu = mEduId;
+                        ConsultUser2.edu_id2 = edu;
+                        //							del.edu_id = edu;
+                        //从业时间戳
+                        String work = year1.getText().toString().trim();
+                        time2 = Integer.parseInt(work);
+                        Log.d("bb", "work " + work);
+                        long work_time =
+                                System.currentTimeMillis() / 1000 - 365 * 24 * 60 * 60
+                                        * Integer.parseInt(work);
+                        Log.d("bb", "bb " + work_time);
+                        ConsultUser2.bgn_tmtp2 = work_time;
+                        //							del.bgn_tmtp = work_time/1000;
+                        //资格证号
+                        String cert = qua.getText().toString().trim();
+                        if (cert == "")
+                            ConsultUser2.cert2 = null;
+                        else
+                            ConsultUser2.cert2 = cert;
+                        Log.d("ab", "cert2" + ConsultUser2.cert2);
+                        //							del.cert_no = cert;
+                        //图像
+                        //							String ur = url;
+                        //							ConsultUser2.image_url2 = ur;
+                        //							del.image_url = ur;
+                        //保险感悟
+                        String think = thought.getText().toString().trim();
+                        if (think == "")
+                            ConsultUser2.ins2 = null;
+                        else
+                            ConsultUser2.ins2 = think;
+                        //							del.ins_say = think;
+                        //所获荣誉
+                        String honor = honour.getText().toString().trim();
+                        if (honor == "")
+                            ConsultUser2.honor2 = null;
+                        else
+                            ConsultUser2.honor2 = honor;
+                        //							del.honor_say = honor;
+                        //是否参加iWatch
+                        if (check == true)
+                            ConsultUser2.in_watch2 = 1;
+                        else if (check == false) ConsultUser2.in_watch2 = 2;
+
+
+                        //比较字段
+                        if (!ConsultUser1.eng1.equals(ConsultUser2.eng2))
+                            del.nick_nm = ConsultUser2.eng2;
+                        else
+                            del.nick_nm = null;
+                        Log.d("bb", "isOrnot" + ConsultUser1.eng1.equals(ConsultUser2.eng2));
+                        if (ConsultUser1.sex1 != ConsultUser2.sex2)
+                            del.sex = ConsultUser2.sex2;
+                        else
+                            del.sex = null;
+                        Log.d("ab", "sex" + ConsultUser1.sex1 + " " + ConsultUser2.sex2);
+                        Log.d("ab", "ss" + del.sex);
+                        if (ConsultUser1.co_id1 != ConsultUser2.co_id2)
+                            del.co_id = ConsultUser2.co_id2;
+                        else
+                            del.co_id = null;
+                        Log.d("ab", "co_id" + ConsultUser1.co_id1 + " " + ConsultUser2.co_id2);
+                        Log.d("ab", "com" + del.co_id);
+                        if (!ConsultUser1.ctt1.equals(ConsultUser2.ctt2))
+                            del.ctt = ConsultUser2.ctt2;
+                        else
+                            del.ctt = null;
+                        if (ConsultUser1.prov_id1 != ConsultUser2.prov_id2)
+                            del.prov_id = ConsultUser2.prov_id2;
+                        else
+                            del.prov_id = null;
+                        if (!ConsultUser1.bday1.equals(ConsultUser2.bday2))
+                            del.bday = ConsultUser2.bday2;
+                        else
+                            del.bday = null;
+                        if (ConsultUser1.edu_id1 != ConsultUser2.edu_id2)
+                            del.edu_id = ConsultUser2.edu_id2;
+                        else
+                            del.edu_id = null;
+                        //判断从业时间戳
+                        if (time1 != time2)
+                            del.bgn_tmtp = ConsultUser2.bgn_tmtp2;
+                        else
+                            del.bgn_tmtp = null;
+                        if (!ConsultUser1.cert1.equals( ConsultUser2.cert2))
+                            del.cert_no = ConsultUser2.cert2;
+                        else
+                            del.cert_no = null;
+                        
+                        Log.d("ab", "cert=="+ConsultUser1.cert1+"=="+ConsultUser2.cert2);
+                        if (!ConsultUser1.ins1.equals(ConsultUser2.ins2)  || ConsultUser1.ins1.equals(""))
+                            del.ins_say = ConsultUser2.ins2;
+                        else
+                            del.ins_say = null;
+                        if (!ConsultUser1.honor1.equals(ConsultUser2.honor2) 
+                                || ConsultUser1.honor1.equals(""))
+                            del.honor_say = ConsultUser2.honor2;
+                        else
+                            del.honor_say = null;
+                        //							Log.d("bb", "url"+ConsultUser1.image_url1+ConsultUser2.image_url2);
+                        //							if(!ConsultUser1.image_url1.equals(ConsultUser2.image_url2)||ConsultUser1.image_url1.equals(""))
+                        //								del.image_url = ConsultUser2.image_url2;
+                        //							else
+                        //								del.image_url = null;
+                        //							Log.d("ab", "del.image_url"+del.image_url);
+                        if (ConsultUser1.in_watch1 != (ConsultUser2.in_watch2))
+                            del.in_watch = ConsultUser2.in_watch2;
+                        else
+                            del.in_watch = null;
+                        Log.d("ab", "dd===" + del.bday + del.bgn_tmtp + del.cert_no + del.co_id
+                                + del.ctt + del.edu_id + del.honor_say + del.image_url
+                                + del.in_watch + del.ins_say + del.nick_nm + del.prov_id + del.sex);
+                        if (del.bday == null && del.bgn_tmtp == null && del.cert_no == null
+                                && del.co_id == null && del.ctt == null && del.edu_id == null
+                                && del.honor_say == null && del.image_url == null
+                                && del.in_watch == null && del.ins_say == null
+                                && del.nick_nm == null && del.prov_id == null && del.sex == null) {
+
+                            setup();
+                        } else {
+                        complete1();
+                        setup();
+                   }
+                    }
+
+                } else if (button.getText().equals("修改")) {
+                    setup1();
+                }
+
+            }
+        });
+        //		hometown = (Spinner) findViewById(R.id.spinner5);
+
+        back = (ImageView) findViewById(R.id.back3);
+        back.setOnClickListener(this);
+
+        if (userConfig.getUserName() != null) username.setText(userConfig.getUserName());
+        englishname = (EditText) findViewById(R.id.english_name);
+        englishname.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                strBeforeRecommend = s.toString();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                if (s.toString().equals(strBeforeRecommend)) {
+                    return;
+                }
+                int editStart = englishname.getSelectionStart();
+                int offset = s.toString().length() - strBeforeRecommend.length();
+                if (s.toString().endsWith(" ")) {
+                    UIHelper.showToastMessage("不能输入空格");
+                    s.delete(s.toString().length() - offset, s.toString().length());
+                    int tempSelection = editStart - offset;
+                    englishname.setText(s);
+                    englishname.setSelection(tempSelection);
+                }
+            }
+        });
+        contact = (EditText) findViewById(R.id.contact);
+        contact.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                strBeforeRecommend = s.toString();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                if (s.toString().equals(strBeforeRecommend)) {
+                    return;
+                }
+                int editStart = contact.getSelectionStart();
+                int offset = s.toString().length() - strBeforeRecommend.length();
+                if (s.toString().endsWith(" ")) {
+                    UIHelper.showToastMessage("不能输入空格");
+                    s.delete(s.toString().length() - offset, s.toString().length());
+                    int tempSelection = editStart - offset;
+                    contact.setText(s);
+                    contact.setSelection(tempSelection);
+                }
+            }
+        });
+//        LinearLayout li = (LinearLayout) findViewById(R.id.pw);
+//        LinearLayout li1 = (LinearLayout) findViewById(R.id.repw);
+//        li.setVisibility(View.GONE);
+//        li1.setVisibility(View.GONE);
+        /**
+         * FIXME
+         * 进入页面时拉取服务器数据
+         * */
+        new ApiClient().getConsultMess(userConfig.getUserId(), userConfig.getUserToken(), this,
+                ConsultMessApi.class, new ApiClient.CallBack<ConsultMessApi>() {
+
+                    @Override
+                    public void success(ConsultMessApi api) {
+                        if (api == null) return;
+                        ConsultUser1.eng1 = api.getNick_nm();
+                        englishname.setText(ConsultUser1.eng1);
+                        ConsultUser1.co_id1 = api.getCo_id();
+                        mComId = ConsultUser1.co_id1;
+                        //调用getComm1,而不是getComm
+                        String co = Ids.getComm1(ConsultUser1.co_id1);
+                        company.setText(co);
+                        ConsultUser1.ctt1 = api.getCtt();
+                        contact.setText(ConsultUser1.ctt1);
+                        ConsultUser1.bday1 = api.getBday();
+						Log.d("ab", "bday" + ConsultUser1.bday1);
+                        String bd = ConsultUser1.bday1;
+                        Log.d("bb", "db" + bd);
+                        if (api.getBday() != null) {
+                            year.setText(bd.substring(0, 4));
+                            month.setText(bd.substring(4, 6));
+                            day.setText(bd.substring(6, 8));
+                        }
+                        //				mSexId = api.getSex();
+
+                        //				mComId = api.getCo_id();
+                        //				mEduId = api.getEdu_id();
+                        //				mHomId = api.getProv_id();
+                        ConsultUser1.sex1 = api.getSex();
+                        mSexId = ConsultUser1.sex1;
+                        Log.d("ab", "sex" + api.getSex());
+                        String string = Ids.getSex(ConsultUser1.sex1);
+                        Log.d("ab", string);
+                         //				if(api.getSex()==0||api.getSex()==1||api.getSex()==2) {
+                        //					sex3.setText(string);
+                        //				}
+                        if (string != null) sex3.setText(string);
+                        ConsultUser1.prov_id1 = api.getProv_id() - 1;
+                        mHomId = ConsultUser1.prov_id1;
+                        Log.d("ab", "prov" + ConsultUser1.prov_id1);
+                        String home = Ids.getProvice(ConsultUser1.prov_id1);
+                        if (home != null) {
+                            hometown.setText(home);
+                        }
+                        //				hometown.setSelection(ConsultUser1.prov_id1, true);
+                        ConsultUser1.edu_id1 = api.getEdu_id() - 1;
+                        mEduId = ConsultUser1.edu_id1;
+                        String ed = Ids.getEdu(ConsultUser1.edu_id1);
+                        if (ed != null) {
+                            edu_id.setText(ed);
+                        }
+                        ConsultUser1.bgn_tmtp1 = api.getBgn_tmtp();
+                        Log.d("bb", "bgn_tmtp1" + ConsultUser1.bgn_tmtp1);
+                        String s =
+                                Long.toString((System.currentTimeMillis() / 1000 - ConsultUser1.bgn_tmtp1)
+                                        / (365 * 24 * 60 * 60));
+                        if (s != null) {
+                            year1.setText(s);
+                        }
+                        time1 = Integer.parseInt(s);
+                        //				month1.setText(s.substring(5, 6));
+                        //				day1.setText(s.substring(7, 8));
+                        ConsultUser1.cert1 = api.getCert_no();
+                        if (api.getCert_no() != null) {
+                            qua.setText(ConsultUser1.cert1);
+                        }
+                        ConsultUser1.ins1 = api.getIns_say();
+                        if (api.getIns_say() != null) {
+                            thought.setText(ConsultUser1.ins1);
+                        }
+                        ConsultUser1.in_watch1 = api.getIn_watch();
+                        Log.d("bb", "watch " + ConsultUser1.in_watch1);
+                        if (ConsultUser1.in_watch1 == 1)
+                            rb1.setChecked(true);
+                        else if (ConsultUser1.in_watch1 == 2) rb2.setChecked(true);
+
+                        try {
+                            if ((month.getText().toString().trim().length() != 0)
+                                    && (day.getText().toString().trim().length() != 0)) {
+                                int m = Integer.parseInt(month.getText().toString().trim());
+                                int da = Integer.parseInt(day.getText().toString().trim());
+                                String con = date2Constellation(m, da);
+                                cons.setText(con);
+                            }
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
+                        }
+
+                        ConsultUser1.honor1 = api.getHonor_say();
+                        honour.setText(ConsultUser1.honor1);
+                        ConsultUser1.image_url1 = api.getImage_url();
+                        Log.d("ab", "consult_image" + api.getImage_url());
+                        if (api.getImage_url() != null) {
+                            RequestManager.getInstance().loadImage(api.getImage_url(), picture);
+                        }
+                    }
+
+                    @Override
+                    public void fail(String error) {
+
+                    }
+                });
+    }
+
+    public static Map<String, Object> getMapForJson(String jsonStr) {
+        JSONObject jsonObject;
+        try {
+            jsonObject = new JSONObject(jsonStr);
+
+            Iterator<String> keyIter = jsonObject.keys();
+            String key;
+            Object value;
+            Map<String, Object> valueMap = new HashMap<String, Object>();
+            while (keyIter.hasNext()) {
+                key = keyIter.next();
+                value = jsonObject.get(key);
+                valueMap.put(key, value);
+            }
+            return valueMap;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case 1:
+                try {
+                    Log.d("bb", "---start");
+                    startPhotoZoom(data.getData());
+                    Log.d("bb", "---end");
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                }
+
+                break;
+            case 2:
+                if (data != null) {
+                    dataIntent = data;
+                    setPicToView(data);
+                }
+                break;
+            case 3:
+                File temp = new File(Environment.getExternalStorageDirectory() + "/hs.jpg");
+                Log.d("bb", "uri " + Uri.fromFile(temp));
+                startPhotoZoom(Uri.fromFile(temp));
+                break;
+
+            default:
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    /**
+     * 裁剪图片方法实现
+     * @param uri
+     */
+    public void startPhotoZoom(Uri uri) {
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setDataAndType(uri, "image/*");
+        //下面这个crop=true是设置在开启的Intent中设置显示的VIEW可裁剪
+        intent.putExtra("crop", "true");
+        // aspectX aspectY 是宽高的比例
+        intent.putExtra("aspectX", 1);
+        intent.putExtra("aspectY", 1);
+        // outputX outputY 是裁剪图片宽高
+        intent.putExtra("outputX", 300);
+        intent.putExtra("outputY", 300);
+        intent.putExtra("return-data", true);
+        startActivityForResult(intent, 2);
+    }
+
+    /**
+     * 保存裁剪之后的图片数据
+     * @param picdata
+     */
+    private void setPicToView(Intent picdata) {
+        Bundle extras = picdata.getExtras();
+        if (extras != null) {
+            photo = extras.getParcelable("data");
+            //				Drawable drawable = new BitmapDrawable(photo);
+            picture.setImageBitmap(null);
+            picture.setImageBitmap(photo);
+            isPost = true;
+        }
+    }
+
+    private Bitmap getMyBitmap() {
+        Log.d("test", "bit");
+        picture.setDrawingCacheEnabled(true);
+        if (picture.getDrawingCache() == null) Log.d("test", "bit is null");
+        if (isFromItent == false) {
+            return picture.getDrawingCache();
+        } else
+            return getBitmap(dataIntent);
+
+    }
+
+    //从Intent获取图片资源
+
+    private Bitmap getBitmap(Intent picdata) {
+        Bundle bun = picdata.getExtras();
+        isFromItent = true;
+        Bitmap photo = null;
+        if (bun != null) {
+            photo = bun.getParcelable("data");
+        }
+
+        return photo;
+    }
+
+
+    //为弹出窗口实现监听类  
+    private OnClickListener itemsOnClick = new OnClickListener() {
+
+        public void onClick(View v) {
+            menuWindow.dismiss();
+            switch (v.getId()) {
+                case R.id.btn_take_photo:
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    //下面这句指定调用相机拍照后的照片存储的路径
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(Environment
+                            .getExternalStorageDirectory(), "hs.jpg")));
+                    startActivityForResult(intent, 3);
+                    break;
+                case R.id.btn_pick_photo:
+                    Intent pickIntent = new Intent(Intent.ACTION_PICK, null);
+                    pickIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                            "image/*");
+                    startActivityForResult(pickIntent, 1);
+                    break;
+                default:
+                    break;
+            }
+
+
+        }
+
+    };
+
+    public static Bitmap convertStringToIcon(String st) {
+        // OutputStream out;  
+        Bitmap bitmap = null;
+        try {
+            // out = new FileOutputStream("/sdcard/aa.jpg");  
+            byte[] bitmapArray;
+            bitmapArray = Base64.decode(st, Base64.DEFAULT);
+            bitmap = BitmapFactory.decodeByteArray(bitmapArray, 0, bitmapArray.length);
+            // bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);  
+            return bitmap;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public void setup() {
+        button.setText("修改");
+//        LinearLayout li = (LinearLayout) findViewById(R.id.pw);
+//        LinearLayout li1 = (LinearLayout) findViewById(R.id.repw);
+//        LinearLayout li2 = (LinearLayout) findViewById(R.id.new_password);
+//        li.setVisibility(View.GONE);
+//        li1.setVisibility(View.GONE);
+//        li2.setVisibility(View.GONE);
+        view.setEnabled(false);
+        //		englishname.setFocusable(false);
+        englishname.setEnabled(false);
+        rel.setEnabled(false);
+        rel1.setEnabled(false);
+        //		contact.setFocusable(false);
+        contact.setEnabled(false);
+        //		hometown.setEnabled(false);
+        //		year.setFocusable(false);
+        year.setEnabled(false);
+        //		month.setFocusable(false);
+        month.setEnabled(false);
+        //		day.setFocusable(false);
+        day.setEnabled(false);
+        rel2.setEnabled(false);
+        rel3.setEnabled(false);
+        //		year1.setFocusable(false);
+        year1.setEnabled(false);
+        //		month1.setFocusable(false);
+        //		month1.setEnabled(false);
+        //		day1.setFocusable(false);
+        //		day1.setEnabled(false);
+        //		qua.setFocusable(false);
+        qua.setEnabled(false);
+        //		thought.setFocusable(false);
+        thought.setEnabled(false);
+        //		honour.setFocusable(false);
+        honour.setEnabled(false);
+        picture.setEnabled(false);
+        rb1.setEnabled(false);
+        rb2.setEnabled(false);
+
+    }
+
+    public void setup1() {
+        button.setText("完成");
+        view.setEnabled(true);
+//        LinearLayout li = (LinearLayout) findViewById(R.id.pw);
+//        LinearLayout li1 = (LinearLayout) findViewById(R.id.repw);
+//        LinearLayout li2 = (LinearLayout) findViewById(R.id.new_password);
+//        li.setVisibility(View.VISIBLE);
+//        li1.setVisibility(View.VISIBLE);
+//        li2.setVisibility(View.VISIBLE);
+        //		englishname.setFocusable(true);
+        englishname.setEnabled(true);
+        rel.setEnabled(true);
+        rel1.setEnabled(true);
+        //		contact.setFocusable(true);
+        contact.setEnabled(true);
+        //		hometown.setEnabled(true);
+        //		year.setFocusable(true);
+        year.setEnabled(true);
+        //		month.setFocusable(true);
+        month.setEnabled(true);
+        //		day.setFocusable(true);
+        day.setEnabled(true);
+        rel2.setEnabled(true);
+        rel3.setEnabled(true);
+        //		year1.setFocusable(true);
+        year1.setEnabled(true);
+        //		month1.setFocusable(true);
+        //		month1.setEnabled(true);
+        //		day1.setFocusable(true);
+        //		day1.setEnabled(true);
+        //		qua.setFocusable(true);
+        qua.setEnabled(true);
+        thought.setFocusable(true);
+        thought.setEnabled(true);
+        honour.setFocusable(true);
+        honour.setEnabled(true);
+        picture.setEnabled(true);
+        rb1.setEnabled(true);
+        rb2.setEnabled(true);
+
+    }
+
+    //判断输入的生日是否合法
+    public static boolean validate(String dateString) {
+        Pattern p = Pattern.compile("\\d{4}+[-]\\d{1,2}+[-]\\d{1,2}+");
+        Matcher m = p.matcher(dateString);
+        if (!m.matches()) return false;
+        String[] array = dateString.split("-");
+        int year = Integer.valueOf(array[0]);
+        int month = Integer.valueOf(array[1]);
+        int day = Integer.valueOf(array[2]);
+
+        if (month < 1 || month > 12) return false;
+        int[] monthLengths = new int[] {0, 31, -1, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+        if (isLeapYear(year)) {
+            monthLengths[2] = 29;
+        } else {
+            monthLengths[2] = 28;
+        }
+        int monthLength = monthLengths[month];
+        if (day < 1 || day > monthLength) {
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean isLeapYear(int year) {
+        return ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0);
+    }
+
+//FIXME 点击完成按钮后,判断所填信息是否合法,并且提交到服务器
+    public void complete1() {
+        //		setup1();
+
+        if (year.getText().toString().trim().length() == 0
+                || month.getText().toString().trim().length() == 0
+                || day.getText().toString().trim().length() == 0) {
+            UIHelper.showToastMessage("出生年月日不能为空");
+            return;
+        }
+        if (year1.getText().toString().trim().length() == 0) {
+            UIHelper.showToastMessage("从业时间不能为空");
+            return;
+        }
+        if (qua.getText().toString().trim().length() == 0) {
+            UIHelper.showToastMessage("资格证号不能为空");
+            return;
+        }
+
+        if (thought.getText().toString().trim().length() == 0) {
+            UIHelper.showToastMessage("保险感悟不能为空");
+            return;
+        }
+        if (honour.getText().toString().trim().length() == 0) {
+            UIHelper.showToastMessage("所获荣誉不能为空");
+            return;
+        }
+        String str =
+                year.getText().toString().trim() + "-" + month.getText().toString().trim() + "-"
+                        + day.getText().toString().trim();
+        if (!validate(str)) {
+            UIHelper.showToastMessage("输入出生年月日不合法");
+            return;
+        }
+        if (month.getText().toString().trim().length() != 2
+                || day.getText().toString().trim().length() != 2) {
+            UIHelper.showToastMessage("月日只能输入2位");
+            return;
+        }
+
+//        PasswordMessageStruct pass = new PasswordMessageStruct();
+
+        //星座
+        int m = Integer.parseInt(month.getText().toString().trim());
+        int da = Integer.parseInt(day.getText().toString().trim());
+        String con = date2Constellation(m, da);
+        cons.setText(con);
+
+        //性别
+        //		int se = mSexId;
+        //		ConsultUser2.sex2 = se;
+        //		del.sex = se;
+        //英文名
+        //		englishname.addTextChangedListener(new TextWatcher() {
+        //			
+        //			@Override
+        //			public void onTextChanged(CharSequence s, int start, int before, int count) {
+        //				
+        //			}
+        //			
+        //			@Override
+        //			public void beforeTextChanged(CharSequence s, int start, int count,
+        //					int after) {
+        //				
+        //			}
+        //			
+        //			@Override
+        //			public void afterTextChanged(Editable s) {
+        //				
+        //			}
+        //		});
+        //		String eng = englishname.getText().toString().trim();
+        //		ConsultUser2.eng2 = eng;
+        ////		del.nick_nm = eng;
+        //		//公司
+        //		int co = mComId;
+        //		ConsultUser2.co_id2 = co;
+        ////		del.co_id = co;
+        //		//联系方式
+        //		String cont = contact.getText().toString().trim();
+        //		ConsultUser2.ctt2 = cont;
+        ////		del.ctt = cont;
+        //		//省份ID
+        //		int hometown_id = mHomId;
+        //		ConsultUser2.prov_id2 = hometown_id;
+        ////		del.prov_id = hometown_id;
+        //		//出生时间
+        //		String birth = year.getText().toString().trim()+month.getText().toString().trim()+day.getText().toString().trim();
+        ////		long time = TimeUtils.getTime(birth);
+        ////		ConsultUser2.bday2 = time/1000;
+        //		ConsultUser2.bday2 = birth;
+        //		del.bday_tmtp = time/1000;
+        //学历ID
+        //		int edu = mEduId;
+        //		ConsultUser2.edu_id2 = edu;
+        ////		del.edu_id = edu;
+        //		//从业时间戳
+        //		String work = year1.getText().toString().trim();
+        //		time2 = Integer.parseInt(work);
+        //		Log.d("bb", "work "+work);
+        //		long work_time = System.currentTimeMillis()/1000-365*24*60*60*Integer.parseInt(work);
+        //		Log.d("bb", "bb "+ work_time);
+        //		ConsultUser2.bgn_tmtp2 = work_time;
+        ////		del.bgn_tmtp = work_time/1000;
+        //		//资格证号
+        //		String cert = qua.getText().toString().trim();
+        //		ConsultUser2.cert2 = cert;
+        ////		del.cert_no = cert;
+        //		//图像
+        ////		String ur = url;
+        ////		ConsultUser2.image_url2 = ur;
+        ////		del.image_url = ur;
+        //		//保险感悟
+        //		String think = thought.getText().toString().trim();
+        //		ConsultUser2.ins2 = think;
+        //		del.ins_say = think;
+        //所获荣誉
+        //		String honor = honour.getText().toString().trim();
+        //		ConsultUser2.honor2 = honor;
+        ////		del.honor_say = honor;
+        //		//是否参加iWatch
+        //		if(check == true)
+        //			ConsultUser2.in_watch2 = 1;
+        //		else if(check == false)
+        //			ConsultUser2.in_watch2 = 2;
+        //		
+        //		
+        //		//比较字段
+        //		if(!ConsultUser1.eng1.equals(ConsultUser2.eng2))
+        //			del.nick_nm = ConsultUser2.eng2;
+        //		else
+        //			del.nick_nm = null;
+        //		Log.d("bb", "isOrnot"+ConsultUser1.eng1.equals(ConsultUser2.eng2));
+        //		if(ConsultUser1.sex1 != ConsultUser2.sex2)
+        //			del.sex = ConsultUser2.sex2;
+        //		else
+        //			del.sex =  null;
+        //		Log.d("ab", "sex"+ConsultUser1.sex1+" "+ConsultUser2.sex2);
+        //		Log.d("ab", "ss"+del.sex);
+        //		if(ConsultUser1.co_id1 != ConsultUser2.co_id2)
+        //			del.co_id = ConsultUser2.co_id2;
+        //		else
+        //			del.co_id = null;
+        //		Log.d("ab", "co_id"+ConsultUser1.co_id1 + " " + ConsultUser2.co_id2);
+        //		Log.d("ab", "com"+del.co_id);
+        //		if(!ConsultUser1.ctt1.equals(ConsultUser2.ctt2))
+        //			del.ctt = ConsultUser2.ctt2;
+        //		else
+        //			del.ctt = null;
+        //		if(ConsultUser1.prov_id1 != ConsultUser2.prov_id2)
+        //			del.prov_id = ConsultUser2.prov_id2;
+        //		else
+        //			del.prov_id = null;
+        //		if(!ConsultUser1.bday1.equals(ConsultUser2.bday2))
+        //			del.bday = ConsultUser2.bday2;
+        //		else
+        //			del.bday = null;
+        //		if(ConsultUser1.edu_id1 != ConsultUser2.edu_id2)
+        //			del.edu_id = ConsultUser2.edu_id2;
+        //		else
+        //			del.edu_id = null;
+        //		//判断从业时间戳
+        //		if(time1 != time2)
+        //			del.bgn_tmtp = ConsultUser2.bgn_tmtp2;
+        //		else
+        //			del.bgn_tmtp =  null;
+        //		if(!ConsultUser1.cert1.equals(ConsultUser2.cert2))
+        //			del.cert_no = ConsultUser2.cert2;
+        //		else
+        //			del.cert_no = null;
+        //		if(!ConsultUser1.ins1.equals(ConsultUser2.ins2)||ConsultUser1.ins1.equals(""))
+        //			del.ins_say = ConsultUser2.ins2;
+        //		else
+        //			del.ins_say = null;
+        //		if(!ConsultUser1.honor1.equals(ConsultUser2.honor2)||ConsultUser1.honor1.equals(""))
+        //			del.honor_say = ConsultUser2.honor2;
+        //		else
+        //			del.honor_say = null;
+        ////		Log.d("bb", "url"+ConsultUser1.image_url1+ConsultUser2.image_url2);
+        ////		if(!ConsultUser1.image_url1.equals(ConsultUser2.image_url2)||ConsultUser1.image_url1.equals(""))
+        ////			del.image_url = ConsultUser2.image_url2;
+        ////		else
+        ////			del.image_url = null;
+        ////		Log.d("ab", "del.image_url"+del.image_url);
+        //		if(ConsultUser1.in_watch1!=(ConsultUser2.in_watch2))
+        //			del.in_watch = ConsultUser2.in_watch2;
+        //		else
+        //			del.in_watch = null;
+        ////		del.image_url = ConsultUser2.image_url2;
+        //		
+        ////		if(isPost == false && del.sex == 1) {
+        ////			del.image_url = null;
+        ////			picture.setBackgroundResource(R.drawable.consult_man_default);
+        ////		}
+        //		
+
+//        button.setEnabled(false);
+//        Log.d("bb", "del" + del.bday);
+//        if (old_pwd.getText().toString().trim().length() != 0) {
+//            //原始密码
+//            String old = old_pwd.getText().toString().trim();
+//            pass.old_pwd = old;
+//            //新密码
+//            String ne = new_pwd.getText().toString().trim();
+//            pass.new_pwd = ne;
+//            //确认密码
+//            String re = re_pwd.getText().toString().trim();
+//            if (!re.equals(ne)) {
+//                re_pwd.setText(null);
+//                toast.setVisibility(View.VISIBLE);
+//                toast.setText("密码不一致,请重新确认密码");
+//            }
+//            new ApiClient().changePassword(pass, userConfig.getUserName(), this, BaseApi.class,
+//                    new ApiClient.CallBack<BaseApi>() {
+//
+//                        @Override
+//                        public void success(BaseApi api) {
+//                            button.setEnabled(true);
+//                            if (api == null) return;
+//                            if (api.getRet_cd() == 0) {
+//                                UIHelper.showToastMessage("密码修改成功");
+//                            }
+//                            if (api.getRet_cd() == 14) {
+//                                UIHelper.showToastMessage(api.getRet_txt());
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void fail(String error) {
+//                            UIHelper.showToastMessage("当前网络有问题！");
+//                            button.setEnabled(true);
+//                        }
+//
+//                    });
+//        }
+
+        new ApiClient().deliverConsultMessage(del, userConfig.getUserId(),
+                userConfig.getUserToken(), this, BaseApi.class, new ApiClient.CallBack<BaseApi>() {
+
+                    @Override
+                    public void success(BaseApi api) {
+                        button.setEnabled(true);
+                        if (api == null) return;
+                        if (api.getRet_cd() == 0) {
+                            UIHelper.showToastMessage("提交成功");
+                            ConsultUser1.eng1 = ConsultUser2.eng2;
+                            ConsultUser1.bday1 = ConsultUser2.bday2;
+                            ConsultUser1.bgn_tmtp1 = ConsultUser2.bgn_tmtp2;
+                            ConsultUser1.cert1 = ConsultUser2.cert2;
+                            ConsultUser1.co_id1 = ConsultUser2.co_id2;
+                            ConsultUser1.ctt1 = ConsultUser2.ctt2;
+                            ConsultUser1.edu_id1 = ConsultUser2.edu_id2;
+                            ConsultUser1.honor1 = ConsultUser2.honor2;
+                            ConsultUser1.in_watch1 = ConsultUser2.in_watch2;
+                            ConsultUser1.prov_id1 = ConsultUser2.prov_id2;
+                            ConsultUser1.sex1 = ConsultUser2.sex2;
+                            ConsultUser1.ins1 = ConsultUser2.ins2;
+                            Intent mIntent = new Intent("nick");
+                            mIntent.putExtra("nick", ConsultUser2.eng2);
+                            //							mIntent.putExtra("image_u", del.image_url);
+                            sendBroadcast(mIntent);
+                            setup();
+} else {
+                            UIHelper.showToastMessage(api.getRet_txt());
+                        }
+
+                    }
+
+                    @Override
+                    public void fail(String error) {
+                        UIHelper.showToastMessage("当前网络有问题！");
+                        button.setEnabled(true);
+
+                    }
+                });
+
+    }
+
+
+
+    public static String date2Constellation(int month, int day) {
+        int mon = month;
+        int d = day;
+        if (d < constellationEdgeDay[mon - 1]) {
+            mon = mon - 1;
+        }
+        if (mon >= 0) {
+            return constellationArr[mon];
+        }
+
+        return constellationArr[11];
+    }
+
+    public void back(View v) {
+        onBackPressed();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+        //		case R.id.back3:
+        //			onBackPressed();
+        //			break;
+            case R.id.sex:
+                mSexArrow.setImageResource(R.drawable.arrow_up);
+                mSex =
+                        new SpinnerDropDown(sex2, this, v.getMeasuredWidth(),
+                                new IOnClickItemListener() {
+
+                                    @Override
+                                    public void clickItem(int item) {
+                                        mSexId = item + 1;
+                                        sex3.setText(sex2.get(item));
+                                    }
+                                }, 1);
+                mSex.setPopwindowHeight(LayoutParams.WRAP_CONTENT);
+                mSex.setOnDismissListener(new OnDismissListener() {
+
+                    @Override
+                    public void onDismiss() {
+                        mSexArrow.setImageResource(R.drawable.bt_down);
+                    }
+                });
+                mSex.showAsDropDown(v, 0, 0);
+                break;
+            case R.id.company:
+                mCompanyArrow.setImageResource(R.drawable.arrow_up);
+                mCom =
+                        new SpinnerDropDown(com1, this, v.getMeasuredWidth(),
+                                new IOnClickItemListener() {
+
+                                    @Override
+                                    public void clickItem(int item) {
+                                        mComId = item + 1;
+                                        company.setText(com1.get(item));
+                                    }
+                                }, 1);
+                mCom.setPopwindowHeight(LayoutParams.WRAP_CONTENT);
+                mCom.setOnDismissListener(new OnDismissListener() {
+
+                    @Override
+                    public void onDismiss() {
+                        mCompanyArrow.setImageResource(R.drawable.bt_down);
+                    }
+                });
+                mCom.showAsDropDown(v, 0, 0);
+                break;
+            case R.id.ori:
+                mHometownArrow.setImageResource(R.drawable.arrow_up);
+                mHom =
+                        new SpinnerDropDown(hom, this, v.getMeasuredWidth(),
+                                new IOnClickItemListener() {
+
+                                    @Override
+                                    public void clickItem(int item) {
+                                        mHomId = item + 1;
+                                        hometown.setText(hom.get(item));
+                                    }
+                                }, 1);
+                mHom.setOnDismissListener(new OnDismissListener() {
+
+                    @Override
+                    public void onDismiss() {
+                        mHometownArrow.setImageResource(R.drawable.bt_down);
+                    }
+                });
+                mHom.showAsDropDown(v, 0, 0);
+                break;
+
+            case R.id.edu:
+                mEduArrow.setImageResource(R.drawable.arrow_up);
+                mEdu =
+                        new SpinnerDropDown(edu1, this, v.getMeasuredWidth(),
+                                new IOnClickItemListener() {
+
+                                    @Override
+                                    public void clickItem(int item) {
+                                        mEduId = item + 1;
+                                        edu_id.setText(edu1.get(item));
+                                    }
+                                }, 1);
+                mEdu.setPopwindowHeight(LayoutParams.WRAP_CONTENT);
+                mEdu.setOnDismissListener(new OnDismissListener() {
+
+                    @Override
+                    public void onDismiss() {
+                        mEduArrow.setImageResource(R.drawable.bt_down);
+                    }
+                });
+                mEdu.showAsDropDown(v, 0, 0);
+                break;
+
+
+        //
+        //		case R.id.complete1:
+        //			complete1();
+        //			break;
+        }
+    }
+    /**
+     * 设置添加屏幕的背景透明度
+     * 
+     * @param bgAlpha
+     */
+    private void backgroundAlpha(float bgAlpha) {
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.alpha = bgAlpha; // 0.0-1.0
+        getWindow().setAttributes(lp);
+    }
+}

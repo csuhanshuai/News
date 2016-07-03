@@ -1,0 +1,5 @@
+package net.bangbao.dao;
+
+public class VersionMessApi extends BaseApi {
+
+}

@@ -1,0 +1,239 @@
+package net.bangbao.ui;
+
+import io.rong.imlib.RongIMClient;
+import io.rong.imlib.RongIMClient.ConnectCallback;
+
+import com.bangbao.lib_segment.SegmentedGroup;
+import com.sina.weibo.sdk.auth.AuthInfo;
+import com.sina.weibo.sdk.auth.Oauth2AccessToken;
+import com.sina.weibo.sdk.auth.WeiboAuthListener;
+import com.sina.weibo.sdk.auth.sso.SsoHandler;
+import com.sina.weibo.sdk.exception.WeiboException;
+
+import net.bangbao.AppConfig;
+import net.bangbao.R;
+import net.bangbao.R.layout;
+import net.bangbao.UserConfig;
+import net.bangbao.base.BaseActivity;
+import net.bangbao.common.UIHelper;
+import net.bangbao.dao.LoginUserApi;
+import net.bangbao.http.ApiClient;
+import net.bangbao.oath.AccessTokenKeeper;
+import net.bangbao.oath.Constants;
+import net.bangbao.sercvice.RongYunService;
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.RadioGroup;
+import android.widget.Toast;
+import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.TextView;
+/*
+ * author:mosl
+ * descrsion:Login
+ */
+public class LoginActivity extends BaseActivity implements ConnectCallback {
+	
+	private TextView textRegister;
+	
+	private EditText loginUsername;
+	private EditText loginPassword;
+	private SegmentedGroup segmentGroup;
+	private int Categry_Item = 0; //0 客户 ，1 保险顾问
+	private View ThirdLoginView;
+	private ImageView weibo_login;
+    private AuthInfo mAuthInfo;
+	    
+	    /** 封装了 "access_token"，"expires_in"，"refresh_token"，并提供了他们的管理功能  */
+	private Oauth2AccessToken mAccessToken;
+
+	    /** 注意：SsoHandler 仅当 SDK 支持 SSO 时有效 */
+	private SsoHandler mSsoHandler;
+	
+	private ApiClient apiClient = new ApiClient();
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_login);
+		if(AppConfig.isLogin()){
+			Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+			startActivity(intent);
+		}
+	    mAuthInfo = new AuthInfo(this, Constants.WeiBo_APP_KEY, Constants.WeiBo_REDIRECT_URL, Constants.WeiBo_SCOPE);
+	    mSsoHandler = new SsoHandler(this, mAuthInfo);
+		initViews();
+		segmentGroup = (SegmentedGroup)findViewById(R.id.segmented);
+		segmentGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(RadioGroup group, int checkedId) {
+				switch (checkedId) {
+				case R.id.custom:
+					Categry_Item = 0;
+					ThirdLoginView.setVisibility(View.VISIBLE);
+					break;
+				default:
+					Categry_Item = 1;
+					ThirdLoginView.setVisibility(View.GONE);
+					break;
+				}
+			}
+		});
+	}
+	
+	private void initViews() {
+		
+		loginUsername = (EditText)findViewById(R.id.login_username);
+		loginPassword = (EditText)findViewById(R.id.login_password);
+		
+		ThirdLoginView = findViewById(R.id.thid_login);
+		textRegister = (TextView)findViewById(R.id.register_text);
+		
+		//微博登陆
+		weibo_login = (ImageView)findViewById(R.id.weibo_login);
+     	weibo_login.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				mSsoHandler.authorizeClientSso(new AuthListener());
+			}
+		});
+		textRegister.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(LoginActivity.this,RegisterActivity.class);
+				startActivity(intent);
+			}
+		});
+		TextView textForgetPass = (TextView)findViewById(R.id.forget_pass);
+		textForgetPass.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(LoginActivity.this,ForgetPassActivity.class);
+				startActivity(intent);
+			}
+		});
+		
+	}
+
+	 @Override
+	    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	        super.onActivityResult(requestCode, resultCode, data);
+	        
+	        // SSO 授权回调
+	        // 重要：发起 SSO 登陆的 Activity 必须重写 onActivityResult
+	        if (mSsoHandler != null) {
+	            mSsoHandler.authorizeCallBack(requestCode, resultCode, data);
+	        }
+	    }
+	class AuthListener implements WeiboAuthListener {
+
+		@Override
+		public void onCancel() {
+			Log.d("mosl","mosl test cancel ");
+		}
+
+		@Override
+		public void onComplete(Bundle values) {
+			// 从 Bundle 中解析 Token
+            mAccessToken = Oauth2AccessToken.parseAccessToken(values);
+            if (mAccessToken.isSessionValid()) {
+                // 显示 Token
+               // updateTokenView(false);
+                
+                // 保存 Token 到 SharedPreferences
+                AccessTokenKeeper.writeAccessToken(LoginActivity.this, mAccessToken);
+                Toast.makeText(LoginActivity.this, 
+                        "success" + mAccessToken.getToken() + "----uid"+mAccessToken.getUid(),Toast.LENGTH_LONG).show();
+                
+            } else {
+                // 以下几种情况，您会收到 Code：
+                // 1. 当您未在平台上注册的应用程序的包名与签mAccessToken名时；
+                // 2. 当您注册的应用程序包名与签名不正确时；
+                // 3. 当您在平台上注册的包名和签名与您当前测试的应用的包名和签名不匹配时。
+                String code = values.getString("code");
+                String message = "fail";
+                if (!TextUtils.isEmpty(code)) {
+                    message = message + "\nObtained the code: " + code;
+                }
+                Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
+            }
+
+		}
+
+		@Override
+		public void onWeiboException(WeiboException arg0) {
+			Log.d("mosl","mosl test exception ");
+		}
+		
+	}
+	public void complete(View v){
+		
+		if(loginUsername.getText().toString().trim().length() ==0 ||
+				loginPassword.getText().toString().trim().length() ==0){
+			UIHelper.showToastMessage("用户名和密码不能为空");
+		}
+		final String username = loginUsername.getText().toString().trim();
+		String password = loginPassword.getText().toString().trim();
+		apiClient.loginUser(username, password, this, LoginUserApi.class,
+				new ApiClient.CallBack<LoginUserApi>(){
+
+			@Override
+			public void success(LoginUserApi api) {
+				
+				if(api == null)return;
+				if(api.getRet_cd() == 0){
+					UIHelper.showToastMessage(
+							"登陆成功");
+					AppConfig.UserCategry = api.getType();
+					AppConfig.login();
+					UserConfig user = new UserConfig();
+					user.setUserId(api.getUser_id());
+					user.setUserToken(String.valueOf(api.getToken()));
+					user.setUserName(username);
+					AppConfig.putUser(user);
+					AppConfig.saveRongYunToken(api.getRc_token());
+					loginRongYun();
+				}
+			}
+
+			@Override
+			public void fail(String error) {
+				UIHelper.showToastMessage(
+						"网络有问题");
+			}
+			
+		});
+	}
+
+	protected void loginRongYun() {
+		try {
+			
+			AppConfig.IMClient = RongIMClient.connect(AppConfig.getRongYunToken(), this);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void onError(ErrorCode arg0) {
+		Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+		startActivity(intent);
+	}
+
+	//融云登陆成功
+	@Override
+	public void onSuccess(String arg0) {
+		Log.d("rongyun","融云登陆成功");
+		Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+		startActivity(intent);
+	}
+	
+}

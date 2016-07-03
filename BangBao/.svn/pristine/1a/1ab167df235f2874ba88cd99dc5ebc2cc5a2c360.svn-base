@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- string 字符串 -->
+<resources>
+
+    <!-- 港险资讯模块 -->
+    <string name="hk_news">新闻</string>
+    <string name="hk_overview">港险概述</string>
+    <string name="hk_advantage">十大优势</string>
+    <string name="hk_problem">常见问题</string>
+    
+    <string name="app_name">帮保</string>
+    <string name="register">注册</string>
+    <string name="my_customer">我的客户</string>
+    <string name="my_consult">我的顾问</string>
+    <string name="login_register"><u>注册</u></string>
+    <string name="login_forget_pass"><u>忘记密码</u></string>
+    <string name="check_iwatch">客户申请apple watch</string>
+    <string name="get_iwatch">我要领iWatch</string>
+    <string name="username">用户名</string>
+    <string name="password">密码</string>
+    <string name="confirm">密码确认</string>
+    <string name="english_name">英文名</string>
+    <string name="contact">联系方式</string>
+    <string name="origin">籍贯</string>
+    <string name="birthday">出生日期</string>
+    <string name="constellation">星座</string>
+    <string name="education">学历</string>
+    <string name="worktime">从业时间</string>
+    <string name="qualification">资格证号</string>
+    <string name="illustrate">为了保障客户的权益，我们需要核实您的准确身份，部分内容仅作为验证，不会在个人展示页面中呈现。</string>
+ <string name="take_part">是否参加帮保保险网组织的活动：4月1日--5月31日客户购买保险达到年缴
+        3万保费的(5年缴及以上)，享受买保险送Apple watch活动(费用将由顾问自行承担)。详情请自行查看app内
+        活动页面。</string>
+    <string name="illustrate1">您的客户提交了领取iWatch的申请，请核实信息是否准确，如无误，请点击确认。我们的员工将亲抵香港与您联系。</string>
+    <string name="thought">保险感悟：</string>
+    <string name="giftaddress">礼品寄送地址：</string>
+    <string name="honour">所获荣誉：</string>
+    <string name="contactstyles">您的联系方式为：</string>
+    <string name="change">修改</string>
+    <string name="sex">性别</string>
+    <string name="policyname">投保人姓名：</string>
+    <string name="policyorder">投保单号：</string>
+    <string name="policymoney">投保金额：</string>
+    <string name="consultname">顾问名称：</string>
+    <string name="contactstyle">联系方式：</string>
+    <string name="company">公司</string>
+    <string name="my_article">我的文章</string>
+    <string name="my_collection">我的收藏</string>
+    <string name="person_message">个人信息</string>
+    <string name="setting">设置</string>
+    <string name="login">登录</string>
+    <string name="quit">再按一下退出帮保！</string>
+    <string name="tab1">港险资讯</string>
+    <string name="tab2">广告</string>
+    <string name="tab3">选保险</string>
+    <string name="tab4">找顾问</string>
+    <string name="tab5">我的</string>
+    
+    <string name="errcode_success">发送成功</string>
+	<string name="errcode_cancel">发送取消</string>
+	<string name="errcode_deny">发送被拒绝</string>
+	<string name="errcode_unknown">发送返回</string>
+	<string name="menu_settings">Settings</string>
+    <string name="insert_card">插入卡</string>
+    <string name="down_fail">下载失败</string>
+    <string name="is_downing">正在下载</string>
+     <string name="down_sucess">下载成功</string>
+	
+	<string name="chat_alert">帮保温馨提示：\n\t\t 投保香港保险必须亲自赴香港签订保险合同才会收到
+	    香港的法律法规保护，大陆客户在其他地区签订的保单，将不受香港法律的保护，也不受大陆法律的保护。帮保真诚为您服务！</string>
+	<string name="service_item"><u>帮保的服务条款</u></string>
+	<string name="zige_shencha"><u>该顾问已经经过帮保的资质审核</u></string>
+	<string name="agent_warning">暂时未开通顾问之间的此项功能，请留意后续版本更新！</string>
+	<string name="word_limit">限定300字</string>
+</resources>

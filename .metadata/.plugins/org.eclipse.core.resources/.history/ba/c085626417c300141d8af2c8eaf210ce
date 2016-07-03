@@ -1,0 +1,75 @@
+package net.bangbao.fragment;
+
+import net.bangbao.R;
+import net.bangbao.ui.CheckIwatchActivity;
+import net.bangbao.ui.ConsultMessageActivity;
+import net.bangbao.ui.LoginActivity;
+import net.bangbao.ui.MyCustomerActivity;
+import net.bangbao.ui.SettingActivity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.LinearLayout;
+
+public class CustomerMineFragment extends Fragment {
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater,
+			@Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+		
+		super.onCreateView(inflater, container, savedInstanceState);
+		View mine = inflater.inflate(R.layout.fragment_customer_mine, null);
+		mine.findViewById(R.id.consult).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(getActivity(),MyCustomerActivity.class);
+				startActivity(intent);
+			}
+		});
+		LinearLayout ll1 = (LinearLayout) mine.findViewById(R.id.person_message);
+		ll1.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(getActivity(),CustomerMessageActivity.class);
+				startActivity(intent);
+			}
+		});
+		LinearLayout ll2 = (LinearLayout) mine.findViewById(R.id.get_iwatch);
+		ll2.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(getActivity(),CheckIwatchActivity.class);
+				startActivity(intent);
+			}
+		});
+		mine.findViewById(R.id.setting1).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(getActivity(),SettingActivity.class));
+			}
+		});
+		
+//		mine.findViewById(R.id.gologin).setOnClickListener(new OnClickListener() {
+//			
+//			@Override
+//			public void onClick(View v) {
+//				startActivity(new Intent(getActivity(),LoginActivity.class));
+//			}
+//		});
+		return mine;
+	}
+
+}

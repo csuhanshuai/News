@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="net.bangbao"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="11"
+        android:targetSdkVersion="21" />
+
+    <supports-screens
+            android:smallScreens="true"
+            android:normalScreens="true"
+            android:largeScreens="true"
+            android:resizeable="true"
+            android:anyDensity="true" />
+    
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" /> 
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/app_logo"
+        android:label="@string/app_name"
+        android:name=".AppInit"
+         >
+         
+          <activity
+            android:label="@string/app_name"
+            android:name="net.bangbao.ui.AppStartActivity"
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="net.bangbao.ui.MainActivity"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Holo.Light"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity 
+            android:label="登陆界面"
+            android:name="net.bangbao.ui.LoginActivity"
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait" />
+        <activity 
+            android:label="注册界面"
+            android:name="net.bangbao.ui.RegisterActivity"
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait" />
+        <activity 
+            android:name="net.bangbao.ui.ChatToConsultActivity"
+            android:label="聊天界面"
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:screenOrientation="portrait" />
+        <activity 
+            android:name="net.bangbao.ui.ArticleContent"
+            android:label="文章详情"
+            android:theme="@android:style/Theme.NoTitleBar"/>
+        <activity 
+            android:name="net.bangbao.ui.LocateHospotal"
+            android:label="定点医院"
+            android:theme="@android:style/Theme.NoTitleBar"/>
+        <activity 
+            android:name="net.bangbao.ui.InsuCatgActivity"
+            android:label="险种分类"
+            android:theme="@android:style/Theme.NoTitleBar"/>
+        <activity 
+            android:name="net.bangbao.ui.InsuCatgDetail"
+            android:label="险种详情"
+            android:theme="@android:style/Theme.NoTitleBar"/>
+        <activity 
+            android:name="net.bangbao.ui.CompCatgActivity"
+            android:label="品牌分类"
+            android:theme="@android:style/Theme.NoTitleBar"/>
+        <activity 
+            android:name="net.bangbao.ui.CompCatgDetail"
+            android:label="品牌详情"
+            android:theme="@android:style/Theme.NoTitleBar"/>
+        <activity android:name="net.bangbao.ui.ForgetPassActivity"
+            android:label="忘记密码"
+            android:theme="@android:style/Theme.NoTitleBar"/>
+        <activity android:name="net.bangbao.ui.ConsultDetailActivity"
+            android:label="代理人详情"
+            android:theme="@android:style/Theme.NoTitleBar"/>
+        
+        <activity android:name="net.bangbao.ui.MyCustomerActivity"
+            android:label="我的客户"
+            android:theme="@android:style/Theme.NoTitleBar"/>
+        <activity android:name="net.bangbao.ui.ConsultMessageActivity"
+            android:label="顾问信息"
+            android:theme="@android:style/Theme.NoTitleBar"/>
+        <activity android:name="net.bangbao.ui.CheckIwatchActivity"
+            android:label="核对iWatch"
+            android:theme="@android:style/Theme.NoTitleBar"/>
+        <activity android:name="net.bangbao.ui.SettingActivity"
+            android:label="设置"
+            android:theme="@android:style/Theme.NoTitleBar"/>
+        <activity android:name="net.bangbao.ui.NewMessageActivity"
+            android:label="新消息提醒"
+            android:theme="@android:style/Theme.NoTitleBar"/>
+        <activity android:name="net.bangbao.ui.AdviceBackActivity"
+            android:label="意见反馈"
+            android:theme="@android:style/Theme.NoTitleBar"/>
+        <activity android:name="net.bangbao.ui.BangBaoServiceItemActivity"
+            android:label="帮保服务条款"
+            android:theme="@android:style/Theme.NoTitleBar"/>
+         <activity android:name="net.bangbao.ui.AboutActivity"
+            android:label="关于帮保"
+            android:theme="@android:style/Theme.NoTitleBar"/>
+         <activity android:name="net.bangbao.ui.CustomerMessageActivity"
+            android:label="客户信息"
+            android:theme="@android:style/Theme.NoTitleBar"/>
+         <activity android:name="net.bangbao.ui.ResetPassActivity"
+            android:label="重置密码"
+            android:theme="@android:style/Theme.NoTitleBar"/>
+        <service 
+            android:name="net.bangbao.sercvice.RongYunService">
+            <intent-filter android:priority="1000">
+                <action android:name="net.bangbao.chat" />
+            </intent-filter>
+        </service>
+         <!-- 必须注册在微博授权，分享微博时候用到 -->
+        <activity android:name="com.sina.weibo.sdk.component.WeiboSdkBrowser" 
+            android:configChanges="keyboardHidden|orientation"
+            android:windowSoftInputMode="adjustResize"
+            android:exported="false" >
+        </activity>
+        <service android:name="com.sina.weibo.sdk.net.DownloadService"
+            android:exported="false"></service>
+        
+        <!-- QQ -->
+        <activity
+            android:name="com.tencent.connect.common.AssistActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity
+       android:name="com.tencent.tauth.AuthActivity"
+       android:noHistory="true"
+       android:launchMode="singleTask" >
+        <intent-filter>
+           <action android:name="android.intent.action.VIEW" />
+       	<category android:name="android.intent.category.DEFAULT" />
+       	<category android:name="android.intent.category.BROWSABLE" />
+           <data android:scheme="1104291905" />
+        </intent-filter>
+        </activity>
+        
+        <!-- WeiChat -->
+        <activity 
+            android:name="net.bangbao.wxapi.WXEntryActivity"
+            android:label="weix"
+            android:exported="true"/>
+        <!-- 融云 -->
+         <service
+            android:name="io.rong.imlib.PushService"
+            android:process="io.rong.push.service" />
+        <service android:name="io.rong.imlib.RongService" />
+        <receiver
+            android:name="io.rong.imlib.PushReceiver"
+            android:process="io.rong.push.service">
+            <intent-filter>
+                <action android:name="io.rong.imlib.action.push.heartbeat" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>

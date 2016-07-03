@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:background="@drawable/test1"
+    android:orientation="vertical" >
+    <LinearLayout 
+        android:layout_width="wrap_content"
+        android:layout_height="300dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="60dp"
+        android:orientation="vertical">
+        
+        <TextView 
+            android:layout_width="260dp"
+            android:layout_height="30dp"
+            android:text="1.您的生日是?"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:layout_marginLeft="30dp"/>
+        
+        <TextView 
+            android:id="@+id/id_time"
+            android:layout_width="220dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="5dp"
+            android:background="#C6E6F6"
+            android:layout_gravity="center"/>
+        <RelativeLayout 
+            android:layout_width="wrap_content"
+            android:layout_height="150dp"
+            android:layout_gravity="center"
+            >
+
+        <DatePicker
+            android:id="@+id/datePicker1"
+            android:layout_width="wrap_content"
+            android:layout_height="130dp"
+            android:minDate="01/01/1955"
+            android:maxDate="01/01/2000"
+            android:layout_centerInParent="true"
+            android:calendarViewShown="false" />
+        
+        </RelativeLayout>
+        
+        <Button 
+            android:id="@+id/id_next1"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:background="@drawable/next"/>
+
+    </LinearLayout>
+    
+
+</LinearLayout>

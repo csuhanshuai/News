@@ -1,0 +1,91 @@
+package net.bangbao.adapter;
+
+import java.util.List;
+
+import net.bangbao.AppConfig;
+import net.bangbao.R;
+import net.bangbao.UserConfig;
+import net.bangbao.dao.CustomerApi;
+import net.bangbao.dao.CustomerApi.CustomerInfo;
+import net.bangbao.dao.InsuCatgApi.InsuCatgInfo;
+import net.bangbao.http.ApiClient;
+import net.bangbao.http.BaseApiClient;
+import net.bangbao.http.InsuranceApi;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
+import com.android.volley.toolbox.ImageLoader.ImageContainer;
+import com.android.volley.toolbox.ImageLoader.ImageListener;
+import com.bangbao.request.RequestManager;
+
+import android.content.Context;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+/*
+ * author:hs
+ * date:3/5
+ * description:我的客户适配器
+ */
+public class CustomerAdapter extends BaseAdapter {
+
+	private Context mContext;
+	private List<CustomerApi> lists;
+	private RequestQueue requestQueue;
+	private UserConfig userConfig;
+	
+	public CustomerAdapter(Context context,List<CustomerApi> list){
+		this.lists = list;
+		this.mContext = context;
+		requestQueue = Volley.newRequestQueue(mContext);
+	}
+	
+
+	@Override
+	public int getCount() {
+		return lists.size();
+	}
+
+	@Override
+	public Object getItem(int position) {
+		return this.lists.get(position);
+	}
+
+	@Override
+	public long getItemId(int position) {
+		return 0;
+	}
+
+	public View getView(int position, View convertView, ViewGroup parent) {
+//		CustomerInfo bean = this.lists.get(position);
+		userConfig = AppConfig.getUser();
+		if(convertView == null){
+			convertView = LayoutInflater.from(mContext).inflate(R.layout.customer_item, null);
+			final TextView username = (TextView) convertView.findViewById(R.id.user);
+			new ApiClient().getMycustomer(null,userConfig.getUserId(), userConfig.getUserToken(), this, CustomerApi.class,
+					new BaseApiClient.CallBack<CustomerApi>() {
+
+				@Override
+				public void success(CustomerApi api) {
+					if(api == null)return;
+					Log.d("bb", "api"+api);
+					username.setText(api.getNick_nm());
+				}
+
+				@Override
+				public void fail(String error) {
+					
+				}
+			});
+		
+		}
+		return convertView;
+	}
+
+
+}

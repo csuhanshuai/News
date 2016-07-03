@@ -1,0 +1,47 @@
+package net.bangbao.ui;
+
+import java.util.ArrayList;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import net.bangbao.R;
+import net.bangbao.base.BaseActivity;
+/*
+ * 关于界面
+ */
+public class AboutActivity extends BaseActivity {
+	private WebView mWebContent;
+	
+	@Override
+	protected void onCreate(Bundle budle) {
+		super.onCreate(budle);
+		setContentView(R.layout.activity_article_content);
+	
+		Intent intent = getIntent();
+		mWebContent = (WebView)findViewById(R.id.web_content);
+		mWebContent.setWebViewClient(new WebViewClient());
+		mWebContent.setWebChromeClient(new WebChromeClient());
+		
+		if(intent !=null){
+			
+			
+			if(intent.getIntegerArrayListExtra("key") !=null){
+				ArrayList<Integer> list = intent.getIntegerArrayListExtra("key");
+			}else{
+				mWebContent.loadUrl(intent.getStringExtra("key"));
+			}
+		}
+		
+		
+	}
+	
+	public void back(View v)
+	{
+		onBackPressed();
+	}
+
+}

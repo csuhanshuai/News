@@ -1,0 +1,140 @@
+package net.bangbao.ui;
+
+import net.bangbao.AppConfig;
+import net.bangbao.R;
+import net.bangbao.UserConfig;
+import net.bangbao.base.BaseActivity;
+import net.bangbao.common.UIHelper;
+import net.bangbao.dao.BaseApi;
+import net.bangbao.dao.User.CustomerMessageStruct;
+import net.bangbao.dao.User.PasswordMessageStruct;
+import net.bangbao.http.ApiClient;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+public class CustomerMessageActivity extends BaseActivity implements View.OnClickListener{
+	
+	private TextView u_name;
+	private EditText nick;
+	private Button button;
+	
+	private EditText old_pwd,new_pwd,re_pwd;
+	private TextView toast;
+	
+	private UserConfig userConfig;
+	@Override
+	protected void onCreate(Bundle arg0) {
+		super.onCreate(arg0);
+		setContentView(R.layout.customer_message);
+		initViews();
+	}
+
+	private void initViews() {
+		userConfig = AppConfig.getUser();
+		u_name = (TextView) findViewById(R.id.u_name);
+		u_name.setText(userConfig.getUserName());
+		
+		nick = (EditText) findViewById(R.id.nickname);
+		button = (Button) findViewById(R.id.complete2);
+		button.setOnClickListener(this);
+		
+		old_pwd = (EditText) findViewById(R.id.old_pwd);
+		new_pwd = (EditText) findViewById(R.id.new_pwd);
+		re_pwd = (EditText) findViewById(R.id.confirm);
+		
+		toast = (TextView) findViewById(R.id.toast);
+	}
+	
+	public void complete2(){
+		if(nick.getText().toString().trim().length() == 0){
+			UIHelper.showToastMessage("昵称不能为空");
+			return;
+		}
+		
+		CustomerMessageStruct customer = new CustomerMessageStruct();
+		PasswordMessageStruct pass = new PasswordMessageStruct();
+		//昵称
+		String ni = nick.getText().toString().trim();
+		customer.nick_nm = ni;
+		//原始密码
+		String old = old_pwd.getText().toString().trim();
+		pass.old_pwd = old;
+		//新密码
+		String ne = new_pwd.getText().toString().trim();
+		pass.new_pwd = ne;
+		//确认密码
+		String re = re_pwd.getText().toString().trim();
+		if(re != ne){
+			re_pwd.clearComposingText();
+			toast.setText("密码不一致,请重新确认密码");
+		}
+		button.setEnabled(false);
+		new ApiClient().changePassword(pass, userConfig.getUserName(), this, BaseApi.class,
+				new ApiClient.CallBack<BaseApi>(){
+
+					@Override
+					public void success(BaseApi api) {
+						button.setEnabled(true);
+						if(api == null) return;
+						if(api.getRet_cd() == 0){
+							UIHelper.showToastMessage("密码修改成功");
+						}
+						if(api.getRet_cd() == 14){
+							UIHelper.showToastMessage("密码有误");
+						}
+					}
+
+					@Override
+					public void fail(String error) {
+						UIHelper.showToastMessage(
+								"当前网络有问题！");
+						button.setEnabled(true);
+					}
+			
+		});
+		new ApiClient().deliverCustomerMessage(customer, userConfig.getUserId(), userConfig.getUserToken(), this, BaseApi.class,
+				new  ApiClient.CallBack<BaseApi>(){
+
+					@Override
+					public void success(BaseApi api) {
+						button.setEnabled(true);
+						if(api == null) return;
+						if(api.getRet_cd() == 0){
+							UIHelper.showToastMessage("昵称提交成功");
+						}
+					}
+
+					@Override
+					public void fail(String error) {
+						UIHelper.showToastMessage(
+								"当前网络有问题！");
+						button.setEnabled(true);
+					}
+			
+		});
+		
+		
+		
+	}
+	public void back(View v)
+	{
+		onBackPressed();
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.complete2:
+			complete2();
+			break;
+
+		default:
+			break;
+		}
+		
+	}
+
+}

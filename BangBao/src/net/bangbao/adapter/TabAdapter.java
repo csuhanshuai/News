@@ -1,0 +1,88 @@
+package net.bangbao.adapter;
+
+import java.util.List;
+
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
+
+/**
+ * Created 
+ * Author: mosl Fragment
+ * Date: 13-10-10
+ * Time: 上午9:25
+ */
+public class TabAdapter implements OnCheckedListener{
+	
+    private List<Fragment> fragments; // 一个tab页面对应一个Fragment
+    private FragmentActivity fragmentActivity; // Fragment所属的Activity
+    private int fragmentContentId; // Activity中所要被替换的区域的id
+    private int currentTab; // 当前Tab页面索引
+
+    
+    public TabAdapter(FragmentActivity fragmentActivity, Bundle savedInstanceState,List<Fragment> fragments, int fragmentContentId) {
+        this.fragments = fragments;
+        this.fragmentActivity = fragmentActivity;
+        this.fragmentContentId = fragmentContentId;
+
+        // 默认显示第一页
+        if(savedInstanceState == null){
+            FragmentTransaction ft = fragmentActivity.getSupportFragmentManager().beginTransaction();
+            ft.add(fragmentContentId, fragments.get(0));
+            ft.commit();
+        }
+    }
+    
+    public OnCheckedListener getOnChangedListener(){
+    	return this;
+    }
+    
+    @Override
+    public void onCheckedChanged(int checkedId) {
+    	
+                Fragment fragment = fragments.get(checkedId);
+                FragmentTransaction ft = obtainFragmentTransaction(checkedId);
+                getCurrentFragment().onPause(); // 暂停当前tab
+                if(fragment.isAdded()){
+                    fragment.onResume(); // 启动目标tab的onResume()
+                }else{
+                    ft.add(fragmentContentId, fragment);
+                }
+                showTab(checkedId); // 显示目标tab
+                ft.commit();
+    }
+
+    /**
+     * 切换tab
+     * @param idx
+     */
+    private void showTab(int idx){
+        for(int i = 0; i < fragments.size(); i++){
+            Fragment fragment = fragments.get(i);
+            FragmentTransaction ft = obtainFragmentTransaction(idx);
+
+            if(idx == i){
+                ft.show(fragment);
+            }else{
+                ft.hide(fragment);
+            }
+            ft.commit();
+        }
+        currentTab = idx; // 更新目标tab为当前tab
+    }
+    
+    private FragmentTransaction obtainFragmentTransaction(int index){
+        FragmentTransaction ft = fragmentActivity.getSupportFragmentManager().beginTransaction();
+        return ft;
+    }
+    
+    public int getCurrentTab() {
+        return currentTab;
+    }
+
+    public Fragment getCurrentFragment(){
+        return fragments.get(currentTab);
+    }
+
+}

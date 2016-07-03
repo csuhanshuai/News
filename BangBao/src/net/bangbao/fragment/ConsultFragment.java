@@ -1,0 +1,311 @@
+package net.bangbao.fragment;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import net.bangbao.R;
+import net.bangbao.adapter.ConsultAdapter;
+import net.bangbao.base.BaseApiClient.Page;
+import net.bangbao.common.UIHelper;
+import net.bangbao.dao.AgentListApi;
+import net.bangbao.dao.AgentListApi.AgentInfo;
+import net.bangbao.network.ApiClient;
+import net.bangbao.ui.ConsultDetailActivity;
+import net.bangbao.widget.SpinnerDropDown;
+import net.bangbao.widget.SpinnerDropDown.IOnClickItemListener;
+import android.app.ActionBar.LayoutParams;
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.PopupWindow.OnDismissListener;
+import android.widget.TextView;
+
+import com.lib_refresh.PullToRefreshBase;
+import com.lib_refresh.PullToRefreshBase.OnRefreshListener;
+import com.lib_refresh.PullToRefreshListView;
+
+/*
+ *  找顾问
+ */
+public class ConsultFragment extends Fragment implements View.OnClickListener {
+	/** 找顾问，pulltorefresh的listView */
+	private ListView mListView;
+
+	/** id **/
+	private int comm_id = -1;
+	private int sex_id = -1;
+	private int sortId = -1;
+
+	/** 旧值 **/
+	private int mOldCommId = -1;
+	private int mOldSexId = -1;
+	private int mOldSortId = -1;
+
+	private ConsultAdapter consultAdapter;
+	private List<AgentInfo> agents = new ArrayList<AgentInfo>();
+	private PullToRefreshListView refreshListView;
+
+	private TextView mCommsTextView, mSexTextView, mSortTextView;
+	private ImageView mCommsArrow, mSexArrow, mSortArrow;
+
+	private List<String> listComms = new ArrayList<String>();
+	private List<String> listSex = new ArrayList<String>();
+	private List<String> listSorts = new ArrayList<String>();
+
+	private Page page = new Page();
+	private SpinnerDropDown mCommsSpinnerDropDown, mSexSpinnerDropDown,
+			mSortSpinnerDropDown;
+	private View mLeftLayout, mMiddleLayout, mRightLayout;
+
+	private ApiClient client = new ApiClient();
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		listComms.add("英国宝诚");
+		listComms.add("AIA友邦");
+		listComms.add("AXA安盛");
+		listComms.add("宏利");
+		listComms.add("富卫");
+		listComms.add("不限");
+
+		listSex.add("男");
+		listSex.add("女");
+		listSex.add("不限");
+
+		listSorts.add("由高到低");
+		listSorts.add("由低到高");
+		listSorts.add("不限");
+
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		super.onCreateView(inflater, container, savedInstanceState);
+		View view = inflater.inflate(R.layout.fragment_look_consult, null);
+		refreshListView = (PullToRefreshListView) view
+				.findViewById(R.id.consult_refresh);
+		refreshListView.setPullLoadEnabled(true);
+		refreshListView.setPullRefreshEnabled(false);
+		refreshListView.setOnRefreshListener(new OnRefreshListener<ListView>() {
+
+			@Override
+			public void onPullDownToRefresh(
+					PullToRefreshBase<ListView> refreshView) {
+			}
+
+			@Override
+			public void onPullUpToRefresh(
+					PullToRefreshBase<ListView> refreshView) {
+				jundeRequest(MessageFragment.getDownloadTag());
+			}
+		});
+		mListView = refreshListView.getRefreshableView();
+		consultAdapter = new ConsultAdapter(getActivity(), agents);
+		// 加item的间距
+		// 设置分割线，顺序不能变
+		mListView.setDivider(this.getResources().getDrawable(
+				R.color.consult_listview_bg));
+		// 这个方法颜色有误差
+		// mListView.setDivider(new ColorDrawable(R.color.gray_title));
+		mListView.setDividerHeight(9);
+		mListView.setAdapter(consultAdapter);
+		mLeftLayout = view.findViewById(R.id.left_option_layout);
+		mMiddleLayout = view.findViewById(R.id.middle_option_layout);
+		mRightLayout = view.findViewById(R.id.right_option_layout);
+
+		mLeftLayout.setOnClickListener(this);
+		mMiddleLayout.setOnClickListener(this);
+		mRightLayout.setOnClickListener(this);
+
+		mCommsTextView = (TextView) view.findViewById(R.id.left_option);
+		mSexTextView = (TextView) view.findViewById(R.id.middle_option);
+		mSortTextView = (TextView) view.findViewById(R.id.right_option);
+
+		mCommsArrow = (ImageView) view.findViewById(R.id.left_arrow);
+		mSexArrow = (ImageView) view.findViewById(R.id.middle_arrow);
+		mSortArrow = (ImageView) view.findViewById(R.id.right_arrow);
+
+		mListView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+
+				Intent intent = new Intent(getActivity(),
+						ConsultDetailActivity.class);
+				int agentId = agents.get(position).user_id;
+				intent.putExtra("key", agentId);
+				getActivity().startActivity(intent);
+			}
+		});
+		jundeRequest(MessageFragment.getDownloadTag());
+		return view;
+	}
+
+	/** 处理onClick方法 **/
+	@Override
+	public void onClick(View v) {
+
+		switch (v.getId()) {
+		case R.id.left_option_layout:
+			mCommsArrow.setImageResource(R.drawable.arrow_up);
+			mLeftLayout.setBackgroundColor(Color.rgb(232, 245, 249));
+			mCommsSpinnerDropDown = new SpinnerDropDown(listComms,
+					this.getActivity(), v.getMeasuredWidth(),
+					new IOnClickItemListener() {
+
+						@Override
+						public void clickItem(int item) {
+							mCommsTextView.setText(listComms.get(item));
+							comm_id = item + 1;
+							jundeRequest(MessageFragment.getDownloadTag());
+						}
+					}, 1);
+			mCommsSpinnerDropDown.setPopwindowHeight(LayoutParams.WRAP_CONTENT);
+			mCommsSpinnerDropDown.setOnDismissListener(new OnDismissListener() {
+
+				@Override
+				public void onDismiss() {
+					mCommsArrow.setImageResource(R.drawable.bt_down);
+					mLeftLayout.setBackgroundColor(Color.parseColor("#a2c8db"));
+				}
+			});
+			mCommsSpinnerDropDown.showAsDropDown(v, 0, 0);
+			break;
+		case R.id.middle_option_layout:
+			mSexArrow.setImageResource(R.drawable.arrow_up);
+			mMiddleLayout.setBackgroundColor(Color.rgb(232, 245, 249));
+			mSexSpinnerDropDown = new SpinnerDropDown(listSex,
+					this.getActivity(), v.getMeasuredWidth(),
+					new IOnClickItemListener() {
+
+						@Override
+						public void clickItem(int item) {
+							mSexTextView.setText(listSex.get(item));
+							sex_id = item + 1;
+							jundeRequest(MessageFragment.getDownloadTag());
+						}
+					}, 1);
+			mSexSpinnerDropDown.setOnDismissListener(new OnDismissListener() {
+
+				@Override
+				public void onDismiss() {
+					mSexArrow.setImageResource(R.drawable.bt_down);
+					mMiddleLayout.setBackgroundColor(Color
+							.parseColor("#a2c8db"));
+				}
+			});
+			mSexSpinnerDropDown.setPopwindowHeight(LayoutParams.WRAP_CONTENT);
+			mSexSpinnerDropDown.showAsDropDown(v, 0, 0);
+			break;
+		case R.id.right_option_layout:
+			mSortArrow.setImageResource(R.drawable.arrow_up);
+			mRightLayout.setBackgroundColor(Color.rgb(232, 245, 249));
+			mSortSpinnerDropDown = new SpinnerDropDown(listSorts,
+					this.getActivity(), v.getMeasuredWidth(),
+					new IOnClickItemListener() {
+
+						@Override
+						public void clickItem(int item) {
+							mSortTextView.setText(listSorts.get(item));
+							sortId = item + 1;
+							jundeRequest(MessageFragment.getDownloadTag());
+						}
+					}, 1);
+			mSortSpinnerDropDown.setPopwindowHeight(LayoutParams.WRAP_CONTENT);
+			mSortSpinnerDropDown.setOnDismissListener(new OnDismissListener() {
+
+				@Override
+				public void onDismiss() {
+					mSortArrow.setImageResource(R.drawable.bt_down);
+					mRightLayout.setBackgroundColor(Color.parseColor("#a2c8db"));
+				}
+			});
+			mSortSpinnerDropDown.showAsDropDown(v, 0, 0);
+			break;
+		default:
+			break;
+		}
+	}
+
+	/** 判断一下是否发起请求 **/
+	protected void jundeRequest(int downloadTag) {
+
+		if (sex_id != mOldSexId || comm_id != mOldCommId
+				|| sortId != mOldSortId) {
+			agents.clear();
+			consultAdapter.notifyDataSetChanged();
+			client.getAgentList(downloadTag,new Page(), sex_id, comm_id, sortId, this,
+					AgentListApi.class, new ApiClient.CallBack<AgentListApi>() {
+						@Override
+						public void success(AgentListApi api) {
+							// refreshListView.onPullDownRefreshComplete();
+							refreshListView.onPullUpRefreshComplete();
+							if (api == null)
+								return;
+							if (api.getItem() == null)
+								return;
+							if (api.getRet_cd() == 0) {
+								page.page_index = api.getPage_index() + 1;
+								page.id_index = api.getId_index();
+								page.page_size = api.getPage_size();
+								agents.addAll(api.getItem());
+								consultAdapter.notifyDataSetChanged();
+							} else {
+								UIHelper.showToastMessage("当前没有记录");
+							}
+
+						}
+
+						@Override
+						public void fail(String error) {
+							Log.d("error json--", error);
+							// refreshListView.onPullDownRefreshComplete();
+							refreshListView.onPullUpRefreshComplete();
+						}
+					});
+		} else {
+			client.getAgentList(downloadTag,page, sex_id, comm_id, sortId, this,
+					AgentListApi.class, new ApiClient.CallBack<AgentListApi>() {
+						@Override
+						public void success(AgentListApi api) {
+							refreshListView.onPullUpRefreshComplete();
+							if (api == null)
+								return;
+							if (api.getRet_cd() == 0) {
+								if (api.getItem() == null)
+									return;
+								page.page_index = api.getPage_index() + 1;
+								page.id_index = api.getId_index();
+								page.page_size = api.getPage_size();
+								agents.addAll(api.getItem());
+								consultAdapter.notifyDataSetChanged();
+							} else {
+								UIHelper.showToastMessage("当前没有记录");
+							}
+						}
+
+						@Override
+						public void fail(String error) {
+							refreshListView.onPullUpRefreshComplete();
+							Log.d("error json", error);
+						}
+					});
+		}
+		mOldCommId = comm_id;
+		mOldSexId = sex_id;
+		mOldSortId = sortId;
+	}
+}

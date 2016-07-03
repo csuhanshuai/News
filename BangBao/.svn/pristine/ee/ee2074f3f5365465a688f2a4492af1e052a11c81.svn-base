@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- dimen 大小 -->
+<resources>
+
+    <!-- 头部标题 -->
+    <dimen name="app_title_height">45dp</dimen>
+    <dimen name="app_title_text_size">15sp</dimen>
+    
+    <!-- tableView item -->
+    <dimen name="text_title">18sp</dimen>
+    <dimen name="text_from">15sp</dimen>
+    
+    <!-- 底部tab height-->
+    <dimen name="tab_height">68dp</dimen>
+     <dimen name="radio_button_conner_radius">5dp</dimen>
+</resources>

@@ -1,0 +1,777 @@
+package net.bangbao.ui;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import net.bangbao.AppConfig;
+import net.bangbao.R;
+import net.bangbao.UserConfig;
+import net.bangbao.base.BaseActivity;
+import net.bangbao.common.TimeUtils;
+import net.bangbao.common.UIHelper;
+import net.bangbao.dao.BaseApi;
+import net.bangbao.dao.ConsultMessApi;
+import net.bangbao.dao.User.DeliverMessageStruct;
+import net.bangbao.dao.User.PasswordMessageStruct;
+import net.bangbao.http.ApiClient;
+import net.bangbao.http.UploadAgent;
+import net.bangbao.widget.SelectPicPopupWindow;
+
+import org.json.JSONObject;
+
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader.ImageContainer;
+import com.android.volley.toolbox.ImageLoader.ImageListener;
+import com.bangbao.request.RequestManager;
+
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Base64;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
+
+public class ConsultMessageActivity extends BaseActivity implements View.OnClickListener {
+	private TextView username,cons;
+	private EditText englishname,contact;
+	private Spinner spinner,spinner1;
+	private Spinner hometown,edu_id;
+	private ImageView picture;
+	
+	private EditText old_pwd,new_pwd,re_pwd;
+	
+	private Intent dataIntent = null;
+	private View view;
+	
+	//自定义的弹出框类  
+    SelectPicPopupWindow menuWindow; 
+    
+	public  Bitmap bi,photo;
+	public boolean isFromItent = false;
+	private UserConfig userConfig;
+	private String url;
+	private TextView button;
+	private EditText year,month,day;
+	private EditText year1,month1,day1,qua;
+	private EditText honour,thought;
+	private TextView toast;
+	
+	private ImageView back;
+	int k = 0;
+	
+	//定义字段
+
+	
+	
+	public static final String[] constellationArr = {"水瓶座","双鱼座","牡羊座","金牛座","双子座",
+		"巨蟹座","狮子座","处女座","天秤座","天蝎座","射手座","摩羯座"};
+	
+	public static final int[] constellationEdgeDay = {20,19,21,21,21,22,23,23,23,23,22,22};
+	
+	@Override
+	protected void onCreate(Bundle arg0) {
+		super.onCreate(arg0);
+		setContentView(R.layout.consult_message);
+		userConfig = AppConfig.getUser();
+		Log.d("bb", "bb"+System.currentTimeMillis()/1000);
+		initViews();
+		setup();
+	}
+	
+	public static class ConsultUser1{
+		public static String eng1;
+		public static String ctt1;
+		public static String cert1;
+		public static String ins1;
+		public static String honor1;
+		public static String image_url1;
+		public static int sex1,co_id1,prov_id1,edu_id1;
+		public static long bday_tmtp1,bgn_tmtp1;
+	}
+	
+	public static class ConsultUser2{
+		public static String eng2;
+		public static String ctt2;
+		public static String cert2;
+		public static String ins2;
+		public static String honor2;
+		public static String image_url2;
+		public static int sex2,co_id2,prov_id2,edu_id2;
+		public static long bday_tmtp2,bgn_tmtp2;
+	}
+
+	private void initViews() {
+		userConfig = AppConfig.getUser();
+		username = (TextView) findViewById(R.id.username);
+		year = (EditText) findViewById(R.id.year1);
+		month = (EditText) findViewById(R.id.month1);
+		day = (EditText) findViewById(R.id.day1);
+		picture = (ImageView) findViewById(R.id.photo);
+		spinner1 = (Spinner) findViewById(R.id.spinner1);
+		
+		old_pwd = (EditText) findViewById(R.id.old_pwd);
+		new_pwd = (EditText) findViewById(R.id.new_pwd);
+		re_pwd = (EditText) findViewById(R.id.confirm);
+		toast = (TextView) findViewById(R.id.toast);
+		toast.setVisibility(View.GONE);
+		
+		view = findViewById(R.id.customer);
+		view.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				//实例化SelectPicPopupWindow  
+                menuWindow = new SelectPicPopupWindow(ConsultMessageActivity.this, itemsOnClick);  
+                //显示窗口  
+                menuWindow.showAtLocation(ConsultMessageActivity.this.findViewById(R.id.spinner2), Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0); //设置layout在PopupWindow中显示的位置  
+            }  
+        });  
+		
+		
+		year1 = (EditText) findViewById(R.id.year2);
+//		month1 = (EditText) findViewById(R.id.month2);
+//		day1 = (EditText) findViewById(R.id.day2);
+		
+		qua = (EditText) findViewById(R.id.qualification);
+		honour = (EditText) findViewById(R.id.honour);
+		thought = (EditText) findViewById(R.id.thought);
+		
+		cons = (TextView) findViewById(R.id.constellation);
+		
+		button = (TextView) findViewById(R.id.complete1);
+		
+		
+			button.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					
+					if(button.getText().equals("完成")){
+						
+						new UploadAgent().uploadImage(getMyBitmap(), userConfig.getUserId(), userConfig.getUserToken(), 
+								new UploadAgent.IUploadCallBack() {
+									
+									@Override
+									public void uploadSuess(String success) {
+										Map<String, Object> maps = getMapForJson(success);
+										url = (String) maps.get("url");
+										complete1();
+										Log.d("bb", url);
+										Log.d("bb", "success"+success);
+									}
+									
+									@Override
+									public void uploadFail(String error) {
+										Log.d("bb", "error"+error);
+										
+									}
+								});
+						
+					}
+					else if(button.getText().equals("修改")){
+						setup1();
+					}
+						
+				}
+			});
+		hometown = (Spinner) findViewById(R.id.spinner5);
+		edu_id = (Spinner) findViewById(R.id.spinner3);
+		back = (ImageView) findViewById(R.id.back3);
+		back.setOnClickListener(this);
+		
+		if(userConfig.getUserName() !=null)
+		username.setText(userConfig.getUserName());
+		englishname = (EditText) findViewById(R.id.english_name);
+		spinner = (Spinner) findViewById(R.id.spinner2);
+		contact = (EditText) findViewById(R.id.contact);
+		LinearLayout li = (LinearLayout) findViewById(R.id.pw);
+		LinearLayout li1 = (LinearLayout) findViewById(R.id.repw);
+		li.setVisibility(View.GONE);
+		li1.setVisibility(View.GONE);
+		new ApiClient().getConsultMess(userConfig.getUserId(),userConfig.getUserToken(),this, ConsultMessApi.class, 
+				new ApiClient.CallBack<ConsultMessApi>() {
+
+			@Override
+			public void success(ConsultMessApi api) {
+				if(api == null)return;
+				ConsultUser1.eng1 = api.getNick_nm();
+				englishname.setText(ConsultUser1.eng1);
+				ConsultUser1.co_id1 = api.getCo_id()-1;
+				spinner.setSelection(ConsultUser1.co_id1,true);
+				ConsultUser1.ctt1 = api.getCtt();
+				contact.setText(ConsultUser1.ctt1);
+				ConsultUser1.bday_tmtp1 = api.getBday_tmtp();
+				String bd = TimeUtils.getStrTime1(ConsultUser1.bday_tmtp1);
+				Log.d("bb", "db"+bd);
+				year.setText(bd.substring(0, 4));
+				month.setText(bd.substring(5, 6));
+				day.setText(bd.substring(7, 8));
+				ConsultUser1.sex1 = api.getSex()-1;
+				spinner1.setSelection(ConsultUser1.sex1,true);
+				ConsultUser1.prov_id1 = api.getProv_id()-1;
+				hometown.setSelection(ConsultUser1.prov_id1, true);
+				ConsultUser1.edu_id1 = api.getEdu_id()-1;
+				edu_id.setSelection(ConsultUser1.edu_id1, true);
+				ConsultUser1.bgn_tmtp1 = api.getBgn_tmtp();
+				Log.d("bb", "bb"+ConsultUser1.bgn_tmtp1);
+				String s = Long.toString((System.currentTimeMillis()/1000-ConsultUser1.bgn_tmtp1)/(365*24*60*60));
+				year1.setText(s);
+//				month1.setText(s.substring(5, 6));
+//				day1.setText(s.substring(7, 8));
+				ConsultUser1.cert1 = api.getCert_no();
+				qua.setText(ConsultUser1.cert1);
+				ConsultUser1.ins1 = api.getIns_say();
+				thought.setText(ConsultUser1.ins1);
+				ConsultUser1.honor1 = api.getHonor_say();
+				honour.setText(ConsultUser1.honor1);
+				ConsultUser1.image_url1 = api.getImage_url();
+				if(api.getImage_url()!=null){
+				RequestManager.loadImage(api.getImage_url(), new ImageListener() {
+					
+					@Override
+					public void onErrorResponse(VolleyError error) {
+						
+					}
+					
+					@Override
+					public void onResponse(ImageContainer response, boolean isImmediate) {
+						picture.setImageBitmap(response.getBitmap());
+						
+					}
+				});
+				}
+			}
+
+			@Override
+			public void fail(String error) {
+				
+			}
+		});
+	}
+	
+	public static Map<String, Object> getMapForJson(String jsonStr){  
+        JSONObject jsonObject ;  
+        try {  
+            jsonObject = new JSONObject(jsonStr);  
+              
+            Iterator<String> keyIter= jsonObject.keys();  
+            String key;  
+            Object value ;  
+            Map<String, Object> valueMap = new HashMap<String, Object>();  
+            while (keyIter.hasNext()) {  
+                key = keyIter.next();  
+                value = jsonObject.get(key);  
+                valueMap.put(key, value);  
+            }  
+            return valueMap;  
+        } catch (Exception e) {  
+            // TODO: handle exception  
+            e.printStackTrace();  
+        }  
+        return null;  
+    }  
+	
+	 @Override
+	    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	    	switch (requestCode) {
+			case 1:
+				try{
+					Log.d("bb", "---start");
+					startPhotoZoom(data.getData());
+					Log.d("bb", "---end");
+				}catch(NullPointerException e){
+					e.printStackTrace();
+				}
+				
+				break;
+			case 2:
+				if(data != null){
+					dataIntent = data;
+					setPicToView(data);
+				}
+				break;
+			case 3:
+				File temp = new File(Environment.getExternalStorageDirectory()
+						+ "/hs.jpg");
+				startPhotoZoom(Uri.fromFile(temp));
+
+			default:
+				break;
+			}
+	    	super.onActivityResult(requestCode, resultCode, data);
+	    }
+	    /**
+		 * 裁剪图片方法实现
+		 * @param uri
+		 */
+		public void startPhotoZoom(Uri uri) {
+			/*
+			 * 至于下面这个Intent的ACTION是怎么知道的，大家可以看下自己路径下的如下网页
+			 * yourself_sdk_path/docs/reference/android/content/Intent.html
+			 * 直接在里面Ctrl+F搜：CROP ，之前小马没仔细看过，其实安卓系统早已经有自带图片裁剪功能,
+			 * 是直接调本地库的，小马不懂C C++  这个不做详细了解去了，有轮子就用轮子，不再研究轮子是怎么
+			 * 制做的了...吼吼
+			 */
+			Intent intent = new Intent("com.android.camera.action.CROP");
+			intent.setDataAndType(uri, "image/*");
+			//下面这个crop=true是设置在开启的Intent中设置显示的VIEW可裁剪
+			intent.putExtra("crop", "true");
+			// aspectX aspectY 是宽高的比例
+			intent.putExtra("aspectX", 1);
+			intent.putExtra("aspectY", 1);
+			// outputX outputY 是裁剪图片宽高
+			intent.putExtra("outputX", 300);
+			intent.putExtra("outputY", 300);
+			intent.putExtra("return-data", true);
+			startActivityForResult(intent, 2);
+		}
+		
+		/**
+		 * 保存裁剪之后的图片数据
+		 * @param picdata
+		 */
+		private void setPicToView(Intent picdata) {
+			Bundle extras = picdata.getExtras();
+			if (extras != null) {
+				photo = extras.getParcelable("data");
+				Drawable drawable = new BitmapDrawable(photo);
+				picture.setImageBitmap(null);
+				picture.setBackgroundDrawable(drawable);
+			}
+		}
+		
+		private Bitmap getMyBitmap(){
+				Log.d("test","bit");
+				picture.setDrawingCacheEnabled(true);
+				if(picture.getDrawingCache() == null)
+					Log.d("test","bit is null");
+				if(isFromItent == false){
+					return picture.getDrawingCache();
+				}
+				else
+					return getBitmap(dataIntent);
+				
+		}
+		
+		//从Intent获取图片资源
+		
+		private Bitmap getBitmap(Intent picdata) {
+			Bundle bun = picdata.getExtras();
+			isFromItent = true;
+			Bitmap photo = null;
+			if(bun != null) {
+				photo = bun.getParcelable("data");
+			}
+			
+			return photo;
+		}
+		
+	
+	//为弹出窗口实现监听类  
+    private OnClickListener  itemsOnClick = new OnClickListener(){  
+  
+        public void onClick(View v) {  
+            menuWindow.dismiss();  
+            switch (v.getId()) {  
+            case R.id.btn_take_photo:  
+            	Intent intent = new Intent(
+						MediaStore.ACTION_IMAGE_CAPTURE);
+				//下面这句指定调用相机拍照后的照片存储的路径
+				intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri
+						.fromFile(new File(Environment
+								.getExternalStorageDirectory(),
+								"xiaoma.jpg")));
+				startActivityForResult(intent, 3);
+                break;  
+            case R.id.btn_pick_photo:
+            	Intent pickIntent = new Intent(Intent.ACTION_PICK,null);
+	        	pickIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+	        	startActivityForResult(pickIntent, 1);
+                break;  
+            default:  
+                break;  
+            }  
+              
+                  
+        }  
+          
+    };  
+	
+	public static Bitmap convertStringToIcon(String st)  
+    {  
+        // OutputStream out;  
+        Bitmap bitmap = null;  
+        try  
+        {  
+            // out = new FileOutputStream("/sdcard/aa.jpg");  
+            byte[] bitmapArray;  
+            bitmapArray = Base64.decode(st, Base64.DEFAULT);  
+            bitmap =  
+                    BitmapFactory.decodeByteArray(bitmapArray, 0,  
+                            bitmapArray.length);  
+            // bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);  
+            return bitmap;  
+        }  
+        catch (Exception e)  
+        {  
+            return null;  
+        }  
+    }  
+	
+	public void setup(){
+		button.setText("修改");
+		LinearLayout li = (LinearLayout) findViewById(R.id.pw);
+		LinearLayout li1 = (LinearLayout) findViewById(R.id.repw);
+		LinearLayout li2 = (LinearLayout) findViewById(R.id.new_password);
+		li.setVisibility(View.GONE);
+		li1.setVisibility(View.GONE);
+		li2.setVisibility(View.GONE);
+		view.setEnabled(false);
+//		englishname.setFocusable(false);
+		englishname.setEnabled(false);
+		spinner1.setEnabled(false);
+		spinner.setEnabled(false);
+//		contact.setFocusable(false);
+		contact.setEnabled(false);
+		hometown.setEnabled(false);
+//		year.setFocusable(false);
+		year.setEnabled(false);
+//		month.setFocusable(false);
+		month.setEnabled(false);
+//		day.setFocusable(false);
+		day.setEnabled(false);
+		edu_id.setEnabled(false);
+//		year1.setFocusable(false);
+		year1.setEnabled(false);
+//		month1.setFocusable(false);
+//		month1.setEnabled(false);
+//		day1.setFocusable(false);
+//		day1.setEnabled(false);
+//		qua.setFocusable(false);
+		qua.setEnabled(false);
+//		thought.setFocusable(false);
+		thought.setEnabled(false);
+//		honour.setFocusable(false);
+		honour.setEnabled(false);
+		picture.setEnabled(false);
+		
+	}
+	
+	public void setup1(){
+		button.setText("完成");
+		view.setEnabled(true);
+		LinearLayout li = (LinearLayout) findViewById(R.id.pw);
+		LinearLayout li1 = (LinearLayout) findViewById(R.id.repw);
+		LinearLayout li2 = (LinearLayout) findViewById(R.id.new_password);
+		li.setVisibility(View.VISIBLE);
+		li1.setVisibility(View.VISIBLE);
+		li2.setVisibility(View.VISIBLE);
+//		englishname.setFocusable(true);
+		englishname.setEnabled(true);
+		spinner1.setEnabled(true);
+		spinner.setEnabled(true);
+//		contact.setFocusable(true);
+		contact.setEnabled(true);
+		hometown.setEnabled(true);
+//		year.setFocusable(true);
+		year.setEnabled(true);
+//		month.setFocusable(true);
+		month.setEnabled(true);
+//		day.setFocusable(true);
+		day.setEnabled(true);
+		edu_id.setEnabled(true);
+//		year1.setFocusable(true);
+		year1.setEnabled(true);
+//		month1.setFocusable(true);
+//		month1.setEnabled(true);
+//		day1.setFocusable(true);
+//		day1.setEnabled(true);
+//		qua.setFocusable(true);
+		qua.setEnabled(true);
+		thought.setFocusable(true);
+		thought.setEnabled(true);
+		honour.setFocusable(true);
+		honour.setEnabled(true);
+		picture.setEnabled(true);
+		
+	}
+	
+	
+	public void complete1(){
+//		setup1();
+		
+		if(year.getText().toString().trim().length() ==0
+				||month.getText().toString().trim().length() == 0
+				||day.getText().toString().trim().length() == 0){
+			UIHelper.showToastMessage("出生年月日不能为空");
+			return;
+		}
+		if(year1.getText().toString().trim().length() ==0){
+			UIHelper.showToastMessage("从业时间不能为空");
+			return;
+		}
+		if(qua.getText().toString().trim().length() == 0){
+			UIHelper.showToastMessage("资格证号不能为空");
+			return;
+		}
+		
+		if(thought.getText().toString().trim().length() == 0){
+			UIHelper.showToastMessage("保险感悟不能为空");
+			return;
+		}
+		if(honour.getText().toString().trim().length() == 0){
+			UIHelper.showToastMessage("所获荣誉不能为空");
+			return;
+		}
+		DeliverMessageStruct del = new DeliverMessageStruct();
+		PasswordMessageStruct pass = new PasswordMessageStruct();
+		
+		//星座
+		int m = Integer.parseInt(month.getText().toString().trim());
+		int da = Integer.parseInt(day.getText().toString().trim());
+		String con = date2Constellation(m, da);
+		cons.setText(con);
+		
+		//性别
+		int se = spinner1.getSelectedItemPosition();
+		ConsultUser2.sex2 = se;
+//		del.sex = se;
+		//英文名
+//		englishname.addTextChangedListener(new TextWatcher() {
+//			
+//			@Override
+//			public void onTextChanged(CharSequence s, int start, int before, int count) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//			
+//			@Override
+//			public void beforeTextChanged(CharSequence s, int start, int count,
+//					int after) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//			
+//			@Override
+//			public void afterTextChanged(Editable s) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//		});
+		String eng = englishname.getText().toString().trim();
+		ConsultUser2.eng2 = eng;
+//		del.nick_nm = eng;
+		//公司
+		int co = spinner.getSelectedItemPosition();
+		ConsultUser2.co_id2 = co;
+//		del.co_id = co;
+		//联系方式
+		String cont = contact.getText().toString().trim();
+		ConsultUser2.ctt2 = cont;
+//		del.ctt = cont;
+		//省份ID
+		int hometown_id = hometown.getSelectedItemPosition();
+		ConsultUser2.prov_id2 = hometown_id;
+//		del.prov_id = hometown_id;
+		//出生时间戳
+		String birth = year.getText().toString().trim()+"年"+month.getText().toString().trim()+"月"+day.getText().toString().trim()+"日";
+		long time = TimeUtils.getTime(birth);
+		ConsultUser2.bday_tmtp2 = time/1000;
+//		del.bday_tmtp = time/1000;
+		//学历ID
+		int edu = edu_id.getSelectedItemPosition();
+		ConsultUser2.edu_id2 = edu;
+//		del.edu_id = edu;
+		//从业时间戳
+		String work = year1.getText().toString().trim();
+		long work_time = System.currentTimeMillis()/1000-365*24*60*60*Integer.parseInt(work);
+		Log.d("bb", "bb "+ work_time);
+		ConsultUser2.bgn_tmtp2 = work_time;
+//		del.bgn_tmtp = work_time/1000;
+		//资格证号
+		String cert = qua.getText().toString().trim();
+		ConsultUser2.cert2 = cert;
+//		del.cert_no = cert;
+		//图像
+		String ur = url;
+		ConsultUser2.image_url2 = ur;
+//		del.image_url = ur;
+		//保险感悟
+		String think = thought.getText().toString().trim();
+		ConsultUser2.ins2 = think;
+//		del.ins_say = think;
+		//所获荣誉
+		String honor = honour.getText().toString().trim();
+		ConsultUser2.honor2 = honor;
+//		del.honor_say = honor;
+		
+		//比较字段
+		if(!ConsultUser1.eng1.equals(ConsultUser2.eng2))
+			del.nick_nm = ConsultUser2.eng2;
+		else
+			del.nick_nm = null;
+		Log.d("bb", "isOrnot"+ConsultUser1.eng1.equals(ConsultUser2.eng2));
+		if(ConsultUser1.sex1 != ConsultUser2.sex2)
+			del.sex = ConsultUser2.sex2;
+		else
+			del.sex =  null;
+		if(ConsultUser1.co_id1 != ConsultUser2.co_id2)
+			del.co_id = ConsultUser2.co_id2;
+		else
+			del.co_id = null;
+		if(!ConsultUser1.ctt1.equals(ConsultUser2.ctt2))
+			del.ctt = ConsultUser2.ctt2;
+		else
+			del.ctt = null;
+		if(ConsultUser1.prov_id1 != ConsultUser2.prov_id2)
+			del.prov_id = ConsultUser2.prov_id2;
+		else
+			del.prov_id = null;
+		if(ConsultUser1.bday_tmtp1 != ConsultUser2.bday_tmtp2)
+			del.bday_tmtp = ConsultUser2.bday_tmtp2;
+		else
+			del.bday_tmtp = null;
+		if(ConsultUser1.edu_id1 != ConsultUser2.edu_id2)
+			del.edu_id = ConsultUser2.edu_id2;
+		else
+			del.edu_id = null;
+		if(ConsultUser1.bgn_tmtp1 != ConsultUser2.bday_tmtp2)
+			del.bgn_tmtp = ConsultUser2.bday_tmtp2;
+		else
+			del.bgn_tmtp =  null;
+		if(!ConsultUser1.cert1.equals(ConsultUser2.cert2))
+			del.cert_no = ConsultUser2.cert2;
+		else
+			del.cert_no = null;
+		if(!ConsultUser1.ins1.equals(ConsultUser2.ins2))
+			del.ins_say = ConsultUser2.ins2;
+		else
+			del.ins_say = null;
+		if(!ConsultUser1.honor1.equals(ConsultUser2.honor2))
+			del.honor_say = ConsultUser2.honor2;
+		else
+			del.honor_say = null;
+		Log.d("bb", "url"+ConsultUser1.image_url1+ConsultUser2.image_url2);
+		if(!ConsultUser1.image_url1.equals(ConsultUser2.image_url2))
+			del.image_url = ConsultUser2.image_url2;
+		else
+			del.image_url = null;
+//		del.image_url = ConsultUser2.image_url2;
+		
+		button.setEnabled(false);
+		Log.d("bb", "del"+del.bday_tmtp);
+		if(old_pwd.getText().toString().trim().length()!=0){
+			//原始密码
+			String old = old_pwd.getText().toString().trim();
+			pass.old_pwd = old;
+			//新密码
+			String ne = new_pwd.getText().toString().trim();
+			pass.new_pwd = ne;
+			//确认密码
+			String re = re_pwd.getText().toString().trim();
+			if(!re.equals(ne)){
+				re_pwd.setText(null);
+				toast.setVisibility(View.VISIBLE);
+				toast.setText("密码不一致,请重新确认密码");
+			}
+			new ApiClient().changePassword(pass, userConfig.getUserName(), this, BaseApi.class,
+					new ApiClient.CallBack<BaseApi>(){
+
+						@Override
+						public void success(BaseApi api) {
+							button.setEnabled(true);
+							if(api == null) return;
+							if(api.getRet_cd() == 0){
+								UIHelper.showToastMessage("密码修改成功");
+							}
+							if(api.getRet_cd() == 14){
+								UIHelper.showToastMessage(api.getRet_txt());
+							}
+						}
+
+						@Override
+						public void fail(String error) {
+							UIHelper.showToastMessage(
+									"当前网络有问题！");
+							button.setEnabled(true);
+						}
+				
+			});
+		}
+		
+		new ApiClient().deliverConsultMessage(del, userConfig.getUserId(), userConfig.getUserToken(), this, BaseApi.class, 
+				new ApiClient.CallBack<BaseApi>() {
+
+					@Override
+					public void success(BaseApi api) {
+						button.setEnabled(true);
+						if(api == null) return;
+						if(api.getRet_cd() == 0){
+							UIHelper.showToastMessage("提交成功");
+							setup();
+						}
+						
+					}
+
+					@Override
+					public void fail(String error) {
+						UIHelper.showToastMessage(
+								"当前网络有问题！");
+						button.setEnabled(true);
+						
+					}
+				});
+		
+	}
+	
+	
+	
+	public static String date2Constellation(int month,int day){
+		int mon = month;
+		int d = day;
+		if(d < constellationEdgeDay[mon]){
+			mon = mon - 2;
+		}
+		if(mon >= 0){
+			return constellationArr[mon];
+		}
+		
+		return constellationArr[11];
+	}
+	
+	public void back(View v)
+	{
+		onBackPressed();
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.back3:
+			onBackPressed();
+			break;
+//
+//		case R.id.complete1:
+//			complete1();
+//			break;
+		}
+	}
+
+}

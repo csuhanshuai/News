@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 文章详情 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:id="@+id/acticle_root" >
+    
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:paddingLeft="10dp">
+        
+        <ImageView 
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/arrow_left"
+            android:layout_alignParentLeft="true"
+            android:layout_centerInParent="true"
+            android:onClick="back"/>
+        
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="关于帮保"
+            android:textColor="#666666"
+            android:layout_centerInParent="true"
+            android:textSize="19sp"/>
+    </RelativeLayout>
+    
+    <TextView 
+        android:layout_width="fill_parent"
+        android:layout_height="300dp"
+        android:layout_marginLeft="10dp"
+        android:textColor="#666666"
+        android:textSize="18sp"
+        android:text="帮保保险网是由深圳帮保网络科技有限公司创建的，融合互联网和保险、运用O2O的方式，为保险潜在消费者和保险从业人员服务的完善的网上保险平台。从建成至今，我们以“专注网站，用心服务”为核心价值，从客户的需求出发，帮助购买、管理保险，致力于打造最全面、最专业、最细致的保险网络门户。"
+        android:layout_marginRight="10dp"/>
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@color/white"
+        android:orientation="horizontal">
+    </LinearLayout>
+</LinearLayout>

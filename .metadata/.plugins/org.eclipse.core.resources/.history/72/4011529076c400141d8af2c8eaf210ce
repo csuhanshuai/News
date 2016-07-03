@@ -1,0 +1,53 @@
+package net.bangbao.http;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import android.util.Log;
+
+import com.android.volley.VolleyError;
+import com.android.volley.Request.Method;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
+import com.bangbao.request.GsonRequest;
+import com.bangbao.request.RequestManager;
+
+public class BaseApiClient implements BangBaoApi{
+
+	protected Map<String,Object> maps = new HashMap<String,Object>();
+	public static class Page{
+		
+		public int id_index;
+		public int page_index;
+		public int page_size = 10;
+		public int page_total;
+	}
+	
+	 //请求的回调接口
+    public static interface CallBack <T>{
+		
+		public void success(T api);
+		public void fail(String error);
+	}
+	//发送gson请求的总方法
+    protected  <T> void  sendGsonRequest(Map maps,Object tag,Class<T> clazz,
+    		final CallBack callback){
+    	
+    	GsonRequest<T> gsonRequest = new GsonRequest<>(Method.POST, HOST, clazz,
+    			null, new Listener<T>() {
+
+					@Override
+					public void onResponse(T arg0) {
+						callback.success(arg0);
+					}
+				}, new ErrorListener() {
+
+					@Override
+					public void onErrorResponse(VolleyError arg0) {
+						Log.d("error",arg0.toString());
+						callback.fail(arg0.toString());
+					}
+				}, maps);
+    	RequestManager.addRequest(gsonRequest, tag);
+    }
+}

@@ -1,0 +1,251 @@
+package net.bangbao.ui;
+
+import net.bangbao.AppConfig;
+import net.bangbao.R;
+import net.bangbao.UserConfig;
+import net.bangbao.base.BaseActivity;
+import net.bangbao.common.Ids;
+import net.bangbao.common.UIHelper;
+import net.bangbao.dao.BaseApi;
+import net.bangbao.dao.ConsultMessApi;
+import net.bangbao.http.AgentApiClient;
+import net.bangbao.http.BaseApiClient;
+import net.bangbao.widget.CircleImage;
+import net.bangbao.widget.ShareCardDialog;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+
+import com.bangbao.request.RequestManager;
+
+
+/**
+ * @author mosl
+ * 顾问详情页  调用者需传递顾问的 key = user_id int型
+ */
+public class ConsultDetailActivity extends BaseActivity implements View.OnClickListener {
+	
+	private View LayoutZixun,LayoutFocus,fram_back,fram_card;
+	private LinearLayout ShareCard;
+	private Bitmap cardBitmap;
+	private CircleImage userImage;
+	//代理人
+	private Intent intent;
+	private AgentApiClient agentClient = new AgentApiClient();
+	//加关注的text
+	private TextView textFocus;
+	
+	/**填写信息的属性 **/
+	private TextView username_text;
+	private TextView sex_text;
+	private TextView edu_text;
+	private TextView mFromTextView;
+	private TextView mAttmTextView; //关注人数
+	private TextView years_text;
+	private TextView honour_text;
+	private TextView get_text; // 感悟
+	private TextView mCommTextView;
+	private TextView mStarCity; //星座
+	private ShareCardDialog mGenCarddialog;
+	private PopupWindow mPopShare;
+	
+	private UserConfig mUserConfig;
+	/**顾问id **/
+	private int agentId;
+	
+	@Override
+	protected void onCreate(Bundle arg0) {
+		super.onCreate(arg0);
+		setContentView(R.layout.activity_consult_detail);
+		intent = getIntent();
+		if(intent != null){
+			agentId = intent.getIntExtra("key", -1);
+			init();
+			mUserConfig = AppConfig.getUser();
+			agentClient.getConsultDetail(agentId, this,ConsultMessApi.class,new BaseApiClient.CallBack<ConsultMessApi>() {
+
+				@Override
+				public void success(ConsultMessApi api) {
+					
+					username_text.setText(api.getNick_nm());
+					sex_text.setText(Ids.getSex(api.getSex()));
+					edu_text.setText(Ids.getEdu(api.getEdu_id()));
+					mFromTextView.setText(Ids.getProvice(api.getProv_id()));
+					mAttmTextView.setText(String.valueOf(0));
+					years_text.setText(String.valueOf(0));
+					honour_text.setText(api.getHonor_say());
+					get_text.setText(api.getIns_say());
+					mCommTextView.setText(Ids.getComm(api.getCo_id()));
+					mStarCity.setText("金牛座");
+					Ids.date2Constellation(api.getBday_tmtp());
+					String imageUrl = api.getImage_url();
+					if(imageUrl != null)
+					RequestManager.getInstance().loadImage(imageUrl,userImage);
+				}
+
+				@Override
+				public void fail(String error) {
+					
+				}
+			});
+		}
+		
+	}
+
+	private void init() {
+		LayoutZixun = findViewById(R.id.button_zixun);
+		LayoutFocus = findViewById(R.id.button_focus);
+		fram_card = findViewById(R.id.fram_card);
+		fram_card.setOnClickListener(this);
+		LayoutFocus.setOnClickListener(this);
+		LayoutZixun.setOnClickListener(this);
+		fram_back = findViewById(R.id.fram_back);
+		fram_back.setOnClickListener(this);
+		textFocus = (TextView)findViewById(R.id.text_focus);
+		username_text = (TextView)findViewById(R.id.username_text);
+		sex_text = (TextView)findViewById(R.id.sex_text);
+		edu_text = (TextView)findViewById(R.id.edu_text);
+		mFromTextView = (TextView)findViewById(R.id.from_text);
+		mAttmTextView = (TextView)findViewById(R.id.star_text);
+		years_text = (TextView)findViewById(R.id.years_text);
+		honour_text = (TextView)findViewById(R.id.honour_text);
+		get_text = (TextView)findViewById(R.id.get_text);
+		ShareCard = (LinearLayout)findViewById(R.id.share_card);
+		userImage = (CircleImage)findViewById(R.id.user_image);
+		mCommTextView = (TextView)findViewById(R.id.comm_text);
+		mStarCity = (TextView)findViewById(R.id.star_city);
+	}
+
+	@Override
+	public void onClick(View v) {
+		
+		switch (v.getId()) {
+		case R.id.button_zixun:
+			startChat();
+			break;
+		case R.id.button_focus:
+			addFocus();
+			break;
+		case R.id.fram_back:
+			onBackPressed();
+			break;
+		case R.id.fram_card:
+			ShareCard.setDrawingCacheEnabled(true);        
+			ShareCard.buildDrawingCache();
+			cardBitmap = ShareCard.getDrawingCache();
+			userImage.setImageBitmap(cardBitmap);
+			
+			mGenCarddialog = new ShareCardDialog(cardBitmap,new IOnClickShare() {
+				
+				@Override
+				public void share() {
+					mGenCarddialog.dismiss();
+					shareToFriends();
+				}
+			});
+			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+			mGenCarddialog.show(ft,"sdfds");
+		default:
+			break;
+		}
+	}
+
+	/**在线咨询**/
+	private void startChat() {
+		
+		if(!AppConfig.isLogin()){
+			UIHelper.showToastMessage("您要登陆才能咨询");
+			return;
+		}
+		
+		if(mUserConfig.getType() == 2 ){
+			UIHelper.showToastMessage("顾问之间不能互相咨询");
+			return;
+		}
+		Intent intent = new Intent(this,ChatActivity.class);
+		intent.putExtra("target_id", String.valueOf(agentId));
+		intent.putExtra("target_categry",ChatActivity.TaAgent);
+		startActivity(intent);
+	}
+	/** 分享给朋友们 **/
+	private void shareToFriends(){
+		
+		View popView = LayoutInflater.from(this).inflate(R.layout.layout_share_to_friends, null);
+		Button btCancel = (Button)popView.findViewById(R.id.bt_cancel);
+		btCancel.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				mPopShare.dismiss();
+			}
+		});
+		mPopShare = new PopupWindow(popView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+		mPopShare.setFocusable(true);
+		mPopShare.setOutsideTouchable(true);
+		mPopShare.setBackgroundDrawable(new BitmapDrawable());
+        mPopShare.showAtLocation(this.findViewById(R.id.back_layout), Gravity.BOTTOM, 0, 0); 
+	}
+	
+	/**加关注 **/
+	private void addFocus(){
+		
+		if(!AppConfig.isLogin()){
+			UIHelper.showToastMessage("您要登陆才能加关注");
+			return;
+		}
+		
+		if(mUserConfig.getType() == 2 ){
+			UIHelper.showToastMessage("顾问之间不能互相关注");
+			return;
+		}
+		
+		if(textFocus.getText().toString().endsWith("取消关注")){
+			
+			cancelFocus();
+			return;
+		}
+		agentClient.addAgentFriends(mUserConfig.getUserId(), mUserConfig.getUserToken(), 
+				agentId,this, BaseApi.class, new BaseApiClient.CallBack<BaseApi>() {
+
+						@Override
+						public void success(BaseApi api) {
+							Log.d("aa",api.getRet_txt());
+							textFocus.setText("取消关注");
+						}
+						@Override
+						public void fail(String error) {
+							
+						}
+					});
+	}
+	
+	/**取消关注 **/
+	public void cancelFocus(){
+		
+		agentClient.cancelAgentFriends(mUserConfig.getUserId(), mUserConfig.getUserToken(), 
+				agentId,this, BaseApi.class, new BaseApiClient.CallBack<BaseApi>() {
+
+					@Override
+					public void success(BaseApi api) {
+						textFocus.setText("加关注");
+					}
+					@Override
+					public void fail(String error) {
+						
+					}
+				});
+	}
+	
+}

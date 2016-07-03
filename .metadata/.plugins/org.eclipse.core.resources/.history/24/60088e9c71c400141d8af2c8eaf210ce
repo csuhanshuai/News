@@ -1,0 +1,229 @@
+package net.bangbao.ui;
+
+import io.rong.imlib.RongIMClient;
+import io.rong.imlib.RongIMClient.ConnectCallback;
+
+import com.bangbao.lib_segment.SegmentedGroup;
+import com.google.gson.Gson;
+import com.sea_monster.core.network.ApiCallback;
+
+import net.bangbao.AppConfig;
+import net.bangbao.R;
+import net.bangbao.UserConfig;
+import net.bangbao.R.layout;
+import net.bangbao.base.BaseActivity;
+import net.bangbao.common.UIHelper;
+import net.bangbao.dao.BaseApi;
+import net.bangbao.dao.LoginUserApi;
+import net.bangbao.dao.User.RegisterStruct;
+import net.bangbao.http.ApiClient;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.Spinner;
+import android.widget.TextView;
+
+/*
+ *  author:mosl
+ *  descrsion:注册界面
+ */
+public class RegisterActivity extends BaseActivity implements View.OnClickListener,ConnectCallback {
+	
+	private EditText textUsername;
+	private EditText textPassword;
+	private Spinner mCommsSpinner;
+	private SegmentedGroup segmented_reg;
+	private View english_name_layout,comms_layout,phone_layout;
+	
+	private TextView register_title;
+	private View fram_back;
+	
+	private int categry_item = 1;  //1 消费者 2 代理人
+	private EditText nm_en_edit;
+	private Spinner mProbs_ans;
+	private EditText ctt_edit,probs_ans;
+	private Button complete;
+	private View service_item;
+	
+	private ApiClient apiClient = new ApiClient();
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_register);
+		initViews();
+	}
+	
+	private void initViews() {
+		segmented_reg = (SegmentedGroup)findViewById(R.id.segmented_reg);
+		english_name_layout = findViewById(R.id.english_name_layout);
+		comms_layout = findViewById(R.id.comms_layout);
+		phone_layout = findViewById(R.id.phone_layout);
+		fram_back = findViewById(R.id.fram_back);
+		nm_en_edit = (EditText)findViewById(R.id.english_username);
+		mProbs_ans = (Spinner)findViewById(R.id.questions);
+		ctt_edit = (EditText)findViewById(R.id.ctt_phone);
+		probs_ans = (EditText)findViewById(R.id.probs_ans);
+		complete = (Button)findViewById(R.id.complete);
+		complete.setOnClickListener(this);
+		fram_back.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
+		segmented_reg.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(RadioGroup group, int checkedId) {
+				switch (checkedId) {
+				case R.id.customer_reg:
+					english_name_layout.setVisibility(View.GONE);
+					comms_layout.setVisibility(View.GONE);
+					phone_layout.setVisibility(View.GONE);
+					register_title.setText("客户注册");
+					categry_item = 1;
+					break;
+
+				default:
+					english_name_layout.setVisibility(View.VISIBLE);
+					comms_layout.setVisibility(View.VISIBLE);
+					phone_layout.setVisibility(View.VISIBLE);
+					register_title.setText("保险顾问注册");
+					categry_item = 2;
+					break;
+				}
+			}
+		});
+		register_title = (TextView)findViewById(R.id.register_title);
+		textUsername = (EditText)findViewById(R.id.text_username);
+		textPassword = (EditText)findViewById(R.id.text_password);
+		mCommsSpinner = (Spinner)findViewById(R.id.comms);
+		
+		service_item = findViewById(R.id.service_item);
+		service_item.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(RegisterActivity.this,
+						BangBaoServiceItemActivity.class));
+			}
+		});
+	}
+
+	public void complete(){
+		
+		if(textUsername.getText().toString().trim().length() ==0
+				||textPassword.getText().toString().trim().length() == 0){
+			UIHelper.showToastMessage("用户名或密码不能为空");
+			return;
+		}
+		if(probs_ans.getText().toString().trim().length() ==0){
+			UIHelper.showToastMessage("答案不能为空");
+			return;
+		}
+		RegisterStruct registerStruct = new RegisterStruct();
+		registerStruct.type = categry_item;
+		String username = textUsername.getText().toString().trim();
+		String password = textPassword.getText().toString().trim();
+		registerStruct.name = username;
+		registerStruct.pwd = password;
+		registerStruct.prob_ans = probs_ans.getText().toString().trim();
+		registerStruct.prob_id = (int)mProbs_ans.getSelectedItemId() + 1 ;
+		if(categry_item == 2){
+			if( nm_en_edit.getText().toString().trim().length() == 0){
+				UIHelper.showToastMessage("英文名不能为空");
+				return;
+			}
+			if(ctt_edit.getText().toString().trim().length() == 0){
+				UIHelper.showToastMessage("联系方式不能为空");
+				return;
+			}
+			registerStruct.ctt = ctt_edit.getText().toString().trim();
+			registerStruct.nm_en = nm_en_edit.getText().toString().trim();
+			registerStruct.co_id = (int)mCommsSpinner.getSelectedItemId() + 1;
+		}
+		complete.setEnabled(false);
+		apiClient.registerUser(registerStruct,
+				this, BaseApi.class,new ApiClient.CallBack<BaseApi>(){
+
+			@Override
+			public void success(BaseApi api) {
+				complete.setEnabled(true);
+				if(api == null) return;
+				if(api.getRet_cd() == 0){
+					Intent intent = new Intent(RegisterActivity.this,
+							MainActivity.class);
+					startActivity(intent);
+					gotoLogin();
+					finish();
+				}
+			}
+
+			@Override
+			public void fail(String error) {
+				UIHelper.showToastMessage(
+						"当前网络有问题！");
+				complete.setEnabled(true);
+			}
+			
+		});
+		
+	}
+	
+	private void gotoLogin(){
+		
+		apiClient.loginUser(textUsername.getText().toString(), textPassword.getText().toString(), 
+				this, LoginUserApi.class, new ApiClient.CallBack<LoginUserApi>() {
+
+					@Override
+					public void success(LoginUserApi api) {
+						AppConfig.login();
+						UserConfig user = new UserConfig();
+						user.setUserId(api.getUser_id());
+						user.setUserToken(String.valueOf(api.getToken()));
+						user.setUserName(textUsername.getText().toString());
+						AppConfig.putUser(user);
+						AppConfig.saveRongYunToken(api.getRc_token());
+						loginRongYun();
+					}
+
+					@Override
+					public void fail(String error) {
+					}
+				});
+	}
+	
+	protected void loginRongYun() {
+		try {
+			
+			AppConfig.IMClient = RongIMClient.connect(AppConfig.getRongYunToken(), this);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	@Override
+	public void onClick(View v) {
+		complete();
+	}
+
+	@Override
+	public void onError(ErrorCode arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onSuccess(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+}

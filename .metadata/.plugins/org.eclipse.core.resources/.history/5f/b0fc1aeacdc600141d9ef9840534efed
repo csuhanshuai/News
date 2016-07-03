@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white" 
+    android:orientation="vertical" >
+    
+     <RelativeLayout
+        android:id="@+id/title" 
+        android:layout_width="fill_parent" 
+        android:layout_height="30dp"
+       >
+      
+      <TextView 
+          android:id="@+id/title_txt"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="选保险"
+          android:textColor="@color/black"
+          android:textSize="20sp"
+          android:layout_centerInParent="true"/>
+     
+      </RelativeLayout>
+    
+    
+     <TextView 
+                android:gravity="center" 
+                android:id="@+id/blank1" 
+                android:layout_width="fill_parent" 
+                android:layout_height="10dip" 
+                android:background="@color/white"
+                 />
+     
+     <LinearLayout 
+        android:orientation="horizontal" 
+        android:id="@+id/company_line1" 
+        android:background="@color/white" 
+        android:layout_width="320dp" 
+        android:layout_height="68dip">
+        
+         
+        <TextView 
+                android:gravity="center" 
+                android:id="@+id/insurance_kind" 
+                android:layout_width="140dp" 
+                android:layout_height="68dp" 
+                android:text="险种分类"
+                android:textSize="20sp"
+                android:textColor="@color/black"
+                android:background="@color/white"
+                 />
+        
+        
+
+        <ImageView
+            android:id="@+id/accident"
+            android:layout_width="68dp"
+            android:layout_height="68dp"
+            android:background="@drawable/accident"
+            android:gravity="center" />
+        
+         <TextView 
+                android:gravity="center" 
+                android:id="@+id/blank4" 
+                android:layout_width="26dp" 
+                android:layout_height="68dp" 
+                android:background="@color/white"
+                 />
+        
+         <ImageView
+             android:id="@+id/dangerous"
+             android:layout_width="68dp"
+             android:layout_height="68dp"
+             android:background="@drawable/dangerous"
+             android:gravity="center" />
+         
+          <TextView 
+                android:gravity="center" 
+                android:id="@+id/blank5" 
+                android:layout_width="18dp" 
+                android:layout_height="68dp" 
+                android:background="@color/white"
+                 />
+         
+      </LinearLayout>
+      
+     <TextView 
+                android:gravity="center" 
+                android:id="@+id/blank2" 
+                android:layout_width="fill_parent" 
+                android:layout_height="10dip" 
+                android:background="@color/white"
+                 />
+      
+     <LinearLayout 
+        android:orientation="horizontal" 
+        android:id="@+id/company_line2" 
+        android:background="@color/white" 
+        android:layout_width="320dp" 
+        android:layout_height="68dp">
+          
+       <TextView 
+                android:gravity="center" 
+                android:id="@+id/blank9" 
+                android:layout_width="36dp" 
+                android:layout_height="68dp" 
+                android:background="@color/white"
+                 />
+        <ImageView 
+                android:gravity="center"  
+                android:id="@+id/hospital" 
+                android:layout_width="68dp" 
+                android:layout_height="68dp" 
+                android:background="@drawable/hospital"
+                 />
+        
+         <TextView 
+                android:gravity="center" 
+                android:id="@+id/blank10" 
+                android:layout_width="36dp" 
+                android:layout_height="68dp" 
+                android:background="@color/white"
+                 />
+        
+         <ImageView 
+                android:gravity="center"  
+                android:id="@+id/life_insurance" 
+                android:layout_width="68dp" 
+                android:layout_height="68dp" 
+                android:background="@drawable/life_insurance"
+                 />
+         
+         <TextView 
+                android:gravity="center" 
+                android:id="@+id/blank7" 
+                android:layout_width="26dp" 
+                android:layout_height="68dp" 
+                android:background="@color/white"
+                 />
+         
+          <ImageView 
+                android:gravity="center"  
+                android:id="@+id/financial_management" 
+                android:layout_width="68dp" 
+                android:layout_height="68dp" 
+                android:background="@drawable/financial_management"
+                 />
+          
+          <TextView 
+                android:gravity="center" 
+                android:id="@+id/blank8" 
+                android:layout_width="18dp" 
+                android:layout_height="68dp" 
+                android:background="@color/white"
+                 />
+      </LinearLayout>
+      
+      <TextView 
+                android:gravity="center" 
+                android:id="@+id/blank3" 
+                android:layout_width="fill_parent" 
+                android:layout_height="10dip" 
+                android:background="@color/white"
+                 />
+      
+      <ImageView 
+                android:gravity="center" 
+                android:id="@+id/cut_line" 
+                android:layout_width="fill_parent" 
+                android:layout_height="20dip" 
+                android:background="@drawable/cut_line"
+                 />
+      
+      <TextView 
+                android:gravity="center" 
+                android:id="@+id/blank11" 
+                android:layout_width="fill_parent" 
+                android:layout_height="10dip" 
+                android:background="@color/white"
+                 />
+      
+     <LinearLayout 
+        android:orientation="horizontal" 
+        android:id="@+id/insurance_line1" 
+        android:background="@color/white" 
+        android:layout_width="320dp" 
+        android:layout_height="102dp"
+       >
+          
+        <TextView 
+                android:gravity="center" 
+                android:id="@+id/brand_kind" 
+                android:layout_width="140dp" 
+                android:layout_height="102dp" 
+                android:text="品牌分类"
+                android:textSize="20sp"
+                android:textColor="@color/black"
+                android:background="@color/white"
+                 />
+          
+         
+        <ImageView 
+                android:gravity="center"  
+                android:id="@+id/aia" 
+                android:layout_width="68dp" 
+                android:layout_height="102dp" 
+                android:background="@drawable/aia"
+                 />
+        
+         <TextView 
+                android:gravity="center" 
+                android:id="@+id/blank12" 
+                android:layout_width="26dp" 
+                android:layout_height="102dp" 
+                android:background="@color/white"
+                 />
+        
+         <ImageView 
+               android:gravity="center"  
+                android:id="@+id/axa" 
+                android:layout_width="68dp" 
+                android:layout_height="102dp" 
+                android:background="@drawable/axa"
+                 />
+         
+          <TextView 
+                android:gravity="center" 
+                android:id="@+id/blank13" 
+                android:layout_width="18dp" 
+                android:layout_height="102dp" 
+                android:background="@color/white"
+                 />
+         
+      </LinearLayout>
+      
+     <TextView 
+                android:gravity="center" 
+                android:id="@+id/blank14" 
+                android:layout_width="fill_parent" 
+                android:layout_height="10dip" 
+                android:background="@color/white"
+                 />
+      
+     <LinearLayout 
+        android:orientation="horizontal" 
+        android:id="@+id/insurance_line2" 
+        android:background="@color/white" 
+        android:layout_width="320dp" 
+        android:layout_height="102dip"
+       >
+          
+        <TextView 
+                android:gravity="center" 
+                android:id="@+id/blank15" 
+                android:layout_width="36dp" 
+                android:layout_height="102dp" 
+                android:background="@color/white"
+                 />
+        <ImageView 
+                android:gravity="center"  
+                android:id="@+id/fw" 
+                android:layout_width="68dp" 
+                android:layout_height="102dp" 
+                android:background="@drawable/fw"
+                 />
+        
+        <TextView 
+                android:gravity="center" 
+                android:id="@+id/blank16" 
+                android:layout_width="36dp" 
+                android:layout_height="102dp" 
+                android:background="@color/white"
+                 />
+        
+         <ImageView 
+               android:gravity="center"  
+                android:id="@+id/manulife" 
+                android:layout_width="68dp" 
+                android:layout_height="102dp" 
+                android:background="@drawable/manulife"
+                 />
+         
+         <TextView 
+                android:gravity="center" 
+                android:id="@+id/blank17" 
+                android:layout_width="26dp" 
+                android:layout_height="102dp" 
+                android:background="@color/white"
+                />
+         
+          <ImageView 
+                android:gravity="center"  
+                android:id="@+id/prldential" 
+                android:layout_width="68dp" 
+                android:layout_height="102dp" 
+                android:background="@drawable/prldential"
+                 />
+          <TextView 
+                android:gravity="center" 
+                android:id="@+id/blank18" 
+                android:layout_width="18dp" 
+                android:layout_height="102dp" 
+                android:background="@color/white"
+                />
+          
+      </LinearLayout>
+      
+     <!--  <TextView 
+                android:gravity="center" 
+                android:id="@+id/blank19" 
+                android:layout_width="fill_parent" 
+                android:layout_height="10dip" 
+                android:background="@color/white"
+                 /> -->
+      
+      <RelativeLayout
+        android:id="@+id/test" 
+        android:background="@color/white" 
+        android:layout_width="fill_parent" 
+        android:layout_height="45dp"
+       >
+      
+     <Button 
+         		android:id="@+id/id_test"
+            	android:layout_centerInParent="true"
+                android:layout_width="250dp"
+                android:layout_height="45dp"
+                android:background="@drawable/not_known"
+               />
+     
+      </RelativeLayout>
+      
+      <TextView 
+                android:gravity="center"
+                android:layout_gravity="center" 
+                android:id="@+id/txt" 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="三步让你知道你需要什么"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                 />
+    
+</LinearLayout>

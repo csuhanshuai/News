@@ -1,0 +1,7 @@
+package net.bangbao.ui;
+
+import net.bangbao.base.BaseActivity;
+
+public class MyConsultActivity extends BaseActivity {
+
+}

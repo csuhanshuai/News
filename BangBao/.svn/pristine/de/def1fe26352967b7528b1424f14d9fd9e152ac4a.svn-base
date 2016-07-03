@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:background="@drawable/share_card_layout_bg"
+    android:fadingEdge="none"
+    >
+    
+    <TextView 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="分享名片"
+        android:layout_gravity="center_horizontal"
+        android:textSize="18sp"
+        />
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center|top">
+        
+        <ImageView 
+            android:layout_width="80dp"
+            android:layout_height="120dp"
+            android:id="@+id/share_card"/>
+        
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="请多多关照"/>
+    </LinearLayout>
+    
+    <LinearLayout 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        >
+    <Button 
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:text="分享"
+        android:id="@+id/share_button"
+        android:background="@drawable/share_card_share_button"
+        android:textColor="@color/gray"
+        android:padding="10dp"
+        />
+    <Button 
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:text="取消"
+        android:id="@+id/cancel_button"
+        android:background="@drawable/share_card_cancel_bg"
+        android:textColor="@color/gray"
+        android:layout_marginLeft="20dp"
+        android:padding="10dp"/>
+    </LinearLayout>
+</LinearLayout>

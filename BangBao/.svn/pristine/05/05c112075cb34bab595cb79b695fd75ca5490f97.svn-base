@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white" >
+
+    <!-- 高度比例是4:4:1:5:5 -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#F7F7F7"
+            android:gravity="center"
+            android:padding="12dip"
+            android:text="选保险"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+
+        <!-- 下划线 -->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/gray_title" />
+        
+        <!-- 此处占4 -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dip"
+            android:layout_weight="4"
+            android:orientation="horizontal" >
+
+            <!-- 每行的第一个1/3 -->
+
+            <FrameLayout
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/white"
+                    android:gravity="center"
+                    android:text="险种分类"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
+            </FrameLayout>
+
+            <!-- 每行的第二个1/3 -->
+
+            <FrameLayout
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="12dip" >
+
+                <net.bangbao.ui.custom.MyFrameLayoutRectangle
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center" >
+
+                    <ImageView
+                        android:id="@+id/accident"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@drawable/accident" />
+                </net.bangbao.ui.custom.MyFrameLayoutRectangle>
+            </FrameLayout>
+
+            <!-- 每行的第三个1/3 -->
+
+            <FrameLayout
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="12dip" >
+
+                <net.bangbao.ui.custom.MyFrameLayoutRectangle
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center" >
+
+                    <ImageView
+                        android:id="@+id/dangerous"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@drawable/dangerous" />
+                </net.bangbao.ui.custom.MyFrameLayoutRectangle>
+            </FrameLayout>
+        </LinearLayout>
+
+        <!-- 第二个占4 -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dip"
+            android:layout_weight="4"
+            android:orientation="horizontal" >
+
+            <!-- 每行的第一个1/3 -->
+
+            <FrameLayout
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="12dip" >
+
+                <net.bangbao.ui.custom.MyFrameLayoutRectangle
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center" >
+
+                    <ImageView
+                        android:id="@+id/hospital"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@drawable/hospital" />
+                </net.bangbao.ui.custom.MyFrameLayoutRectangle>
+            </FrameLayout>
+
+            <!-- 每行的第二个1/3 -->
+
+            <FrameLayout
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="12dip" >
+
+                <net.bangbao.ui.custom.MyFrameLayoutRectangle
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center" >
+
+                    <ImageView
+                        android:id="@+id/life_insurance"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@drawable/life_insurance" />
+                </net.bangbao.ui.custom.MyFrameLayoutRectangle>
+            </FrameLayout>
+
+            <!-- 每行的第三个1/3 -->
+
+            <FrameLayout
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="12dip" >
+
+                <net.bangbao.ui.custom.MyFrameLayoutRectangle
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center" >
+
+                    <ImageView
+                        android:id="@+id/financial_management"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@drawable/financial_management" />
+                </net.bangbao.ui.custom.MyFrameLayoutRectangle>
+            </FrameLayout>
+        </LinearLayout>
+
+        <!-- 此处占1 -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dip"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:paddingLeft="12dip"
+            android:paddingRight="12dip" >
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/cut_line" />
+        </LinearLayout>
+
+        <!-- 此处占5 -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dip"
+            android:layout_weight="5"
+            android:orientation="horizontal" >
+
+            <!-- 每行的第一个1/3 -->
+
+            <FrameLayout
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="12dip" >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/white"
+                    android:gravity="center"
+                    android:text="品牌分类"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
+            </FrameLayout>
+
+            <!-- 每行的第二个1/3 -->
+
+            <FrameLayout
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="12dip" >
+
+                <net.bangbao.ui.custom.MyFrameLayoutRectangle2
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center" >
+
+                    <ImageView
+                        android:id="@+id/aia"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@drawable/aia" />
+                </net.bangbao.ui.custom.MyFrameLayoutRectangle2>
+            </FrameLayout>
+
+            <!-- 每行的第三个1/3 -->
+
+            <FrameLayout
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="12dip" >
+
+                <net.bangbao.ui.custom.MyFrameLayoutRectangle2
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center" >
+
+                    <ImageView
+                        android:id="@+id/axa"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@drawable/axa" />
+                </net.bangbao.ui.custom.MyFrameLayoutRectangle2>
+            </FrameLayout>
+        </LinearLayout>
+
+        <!-- 此处占5 -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dip"
+            android:layout_weight="5"
+            android:orientation="horizontal" >
+
+            <!-- 每行的第一个1/3 -->
+
+            <FrameLayout
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="12dip" >
+
+                <net.bangbao.ui.custom.MyFrameLayoutRectangle2
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center" >
+
+                    <ImageView
+                        android:id="@+id/fw"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@drawable/fw" />
+                </net.bangbao.ui.custom.MyFrameLayoutRectangle2>
+            </FrameLayout>
+
+            <!-- 每行的第二个1/3 -->
+
+            <FrameLayout
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="12dip" >
+
+                <net.bangbao.ui.custom.MyFrameLayoutRectangle2
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center" >
+
+                    <ImageView
+                        android:id="@+id/manulife"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@drawable/manulife" />
+                </net.bangbao.ui.custom.MyFrameLayoutRectangle2>
+            </FrameLayout>
+
+            <!-- 每行的第三个1/3 -->
+
+            <FrameLayout
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="12dip" >
+
+                <net.bangbao.ui.custom.MyFrameLayoutRectangle2
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center" >
+
+                    <ImageView
+                        android:id="@+id/prldential"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@drawable/prldential" />
+                </net.bangbao.ui.custom.MyFrameLayoutRectangle2>
+            </FrameLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+</FrameLayout>

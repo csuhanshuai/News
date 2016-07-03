@@ -1,0 +1,39 @@
+package net.bangbao.ui;
+
+import net.bangbao.AppConfig;
+import net.bangbao.R;
+import net.bangbao.UserConfig;
+import net.bangbao.base.BaseActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
+
+public class CustomerMessageActivity extends BaseActivity {
+	
+	private TextView u_name;
+	private EditText nick;
+	
+	private UserConfig userConfig;
+	@Override
+	protected void onCreate(Bundle arg0) {
+		super.onCreate(arg0);
+		setContentView(R.layout.customer_message);
+		initViews();
+	}
+
+	private void initViews() {
+		userConfig = AppConfig.getUser();
+		u_name = (TextView) findViewById(R.id.u_name);
+		u_name.setText(userConfig.getUserName());
+		
+		nick = (EditText) findViewById(R.id.nickname);
+		
+		
+	}
+	public void back(View v)
+	{
+		onBackPressed();
+	}
+
+}

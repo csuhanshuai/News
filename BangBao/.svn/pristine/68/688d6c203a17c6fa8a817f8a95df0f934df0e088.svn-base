@@ -1,0 +1,44 @@
+package net.bangbao.fragment;
+
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import net.bangbao.AppConfig;
+import net.bangbao.R;
+import net.bangbao.base.BaseFragment;
+
+/**
+ * @author mosl
+ * 广告页面
+ */
+public class AdvertiseFragment extends BaseFragment {
+	
+	private WebView mAdWebView;
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater,
+			@Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+		super.onCreateView(inflater, container, savedInstanceState);
+		View view = LayoutInflater.from(getActivity()).inflate(R.layout.advertise_fragment, null);
+		mAdWebView = (WebView)view.findViewById(R.id.ad_webview);
+		mAdWebView.setWebChromeClient(new WebChromeClient());
+		if(!AppConfig.isLogin()){
+			mAdWebView.loadUrl("file:///android_asset/customer_ad.html");
+		}
+		if(AppConfig.isLogin()&&AppConfig.getUser().getType() == 2)
+			mAdWebView.loadUrl("file:///android_asset/consult_ad.html");
+		else if(AppConfig.isLogin()&&AppConfig.getUser().getType() == 1)
+			mAdWebView.loadUrl("file:///android_asset/customer_ad.html");
+		return view;
+	}
+}

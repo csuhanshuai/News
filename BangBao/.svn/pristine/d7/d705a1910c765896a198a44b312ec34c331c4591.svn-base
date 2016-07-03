@@ -1,0 +1,126 @@
+package net.bangbao.adapter;
+
+import java.util.List;
+
+import net.bangbao.AppConfig;
+import net.bangbao.R;
+import net.bangbao.UserConfig;
+import net.bangbao.common.Ids;
+import net.bangbao.dao.ConsultApi.ConsultInfo;
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+
+public class ConsultAdapter1 extends BaseAdapter {
+
+	private TextView username,comm,sex,num,edu;
+	private List<ConsultInfo> infos;
+	private Context context;
+	
+	private UserConfig userConfig = AppConfig.getUser();
+	
+	public ConsultAdapter1(List<ConsultInfo> list,Context context) {
+		this.infos = list;
+		this.context = context;
+	}
+	@Override
+	public int getCount() {
+		return infos.size();
+	}
+
+	@Override
+	public Object getItem(int position) {
+		return null;
+	}
+
+	@Override
+	public long getItemId(int position) {
+		return 0;
+	}
+
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		
+		ConsultInfo info = infos.get(position);
+		
+//		if(convertView == null){
+//			convertView = LayoutInflater.from(context).inflate(
+//					R.layout.consult_item, null);
+//			username = (TextView)convertView.findViewById(R.id.name);
+//			
+//			username.setText(info.getNick_nm());
+//			
+//			comm = (TextView) convertView.findViewById(R.id.comm);
+//			String com = Ids.getComm(info.getCo_id());
+//			comm.setText(com);
+//			
+//			sex = (TextView) convertView.findViewById(R.id.text_gg);
+//			String s = Ids.getSex(info.getSex());
+//			sex.setText(s);
+//			
+//			num = (TextView) convertView.findViewById(R.id.num_focus);
+//			String n = Integer.toString(info.getAtte_num());
+//			num.setText(n);
+//			
+//			edu = (TextView) convertView.findViewById(R.id.xueli);
+//			String e = Ids.getEdu(info.getEdu_id());
+//			edu.setText(e);
+//			
+//			
+//		}
+//		return convertView;
+		ViewHolder viewHolder = null;
+		if(convertView == null){
+			viewHolder = new ViewHolder();
+			convertView = LayoutInflater.from(context).inflate(
+					R.layout.consult_item, null);
+			viewHolder.username = (TextView)convertView.findViewById(R.id.name);
+			viewHolder.username.setText(info.getNick_nm());
+			
+			viewHolder.comm = (TextView) convertView.findViewById(R.id.comm);
+			String com = Ids.getComm(info.getCo_id());
+			viewHolder.comm.setText(com);
+			
+			viewHolder.sex = (TextView) convertView.findViewById(R.id.text_gg);
+			String s = Ids.getSex(info.getSex());
+			viewHolder.sex.setText(s);
+			
+			viewHolder.num = (TextView) convertView.findViewById(R.id.num_focus);
+			String n = Integer.toString(info.getAtte_num());
+			viewHolder.num.setText(n);
+			
+			viewHolder.edu = (TextView) convertView.findViewById(R.id.xueli);
+			String e = Ids.getEdu(info.getEdu_id());
+			viewHolder.edu.setText(e);
+			
+			viewHolder.image = (ImageView) convertView.findViewById(R.id.image);
+			String url = info.getImage_url();
+			
+			convertView.setTag(viewHolder);
+		}else{
+			viewHolder = (ViewHolder)convertView.getTag();
+			viewHolder.username.setText(info.getNick_nm());
+			String com = Ids.getComm(info.getCo_id());
+			viewHolder.comm.setText(com);
+			String s = Ids.getSex(info.getSex());
+			viewHolder.sex.setText(s);
+			String n = Integer.toString(info.getAtte_num());
+			viewHolder.num.setText(n);
+			String e = Ids.getEdu(info.getEdu_id());
+			viewHolder.edu.setText(e);
+			
+		}
+		return convertView;
+	}
+	
+	public final class ViewHolder{
+		public ImageView image;
+		public TextView username,comm,sex,num,edu;
+	}
+
+}

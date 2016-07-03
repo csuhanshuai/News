@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android" >
+        <!-- 定义一个动画帧，Drawable为pig0，持续时间50毫秒 -->
+   <item android:drawable="@drawable/pig1" android:duration="50" />
+   <item android:drawable="@drawable/pig2" android:duration="50" />
+   <item android:drawable="@drawable/pig3" android:duration="50" />
+   <item android:drawable="@drawable/pig4" android:duration="50" />
+   <item android:drawable="@drawable/pig5" android:duration="50" />
+   <item android:drawable="@drawable/pig6" android:duration="50" />
+   <item android:drawable="@drawable/pig7" android:duration="50" />
+   <item android:drawable="@drawable/pig8" android:duration="50" />
+   <item android:drawable="@drawable/pig9" android:duration="50" />
+   <item android:drawable="@drawable/pig10" android:duration="50" />
+   <item android:drawable="@drawable/pig11" android:duration="50" />
+   <item android:drawable="@drawable/pig12" android:duration="50" />
+   <item android:drawable="@drawable/pig13" android:duration="50" />
+   <item android:drawable="@drawable/pig14" android:duration="50" />
+   <item android:drawable="@drawable/pig15" android:duration="50" />
+   <item android:drawable="@drawable/pig16" android:duration="50" />
+</animation-list>

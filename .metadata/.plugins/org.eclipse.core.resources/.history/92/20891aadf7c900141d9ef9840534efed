@@ -1,0 +1,30 @@
+package net.bangbao.dao;
+
+public class CustomerMessApi extends BaseApi {
+	private int sex;
+	private String nick_nm;
+	public String getNick_nm() {
+		return nick_nm;
+	}
+	public void setNick_nm(String nick_nm) {
+		this.nick_nm = nick_nm;
+	}
+	public int getSex() {
+		return sex;
+	}
+	public void setSex(int sex) {
+		this.sex = sex;
+	}
+	
+	@Override
+	public String toString() {
+		return "ConsultMessApi [cmd=" + cmd + ", sex="
+				+ sex + ", nm_en=" + nm_en + ", nm_cn="
+				+ nm_cn + ", co_id=" + co_id + ", ctt" + ctt + " prov_id" + prov_id + " bday_tmtp" +
+				bday_tmtp + " edu_id" + edu_id + " bgn_tmtp" + bgn_tmtp + " cert_no" + cert_no
+				+ " image_id" + image_id + " image_url" + image_url + " ins_say" + ins_say
+				+ " honor_say" + honor_say + "]";
+	}
+	
+
+}

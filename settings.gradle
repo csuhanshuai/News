@@ -1,0 +1,5 @@
+include ':library'
+include ':WeiboSDK'
+include ':BangBao'
+include ':lib_pageindicator'
+include ':lib_refresh'

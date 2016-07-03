@@ -1,0 +1,329 @@
+package net.bangbao.http;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.Request.Method;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
+import com.android.volley.toolbox.StringRequest;
+import com.bangbao.request.GsonRequest;
+import com.bangbao.request.RequestManager;
+import com.google.gson.Gson;
+
+import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
+
+import net.bangbao.dao.BaseApi;
+import net.bangbao.dao.ConsultMessApi;
+import net.bangbao.dao.User.CustomerMessageStruct;
+import net.bangbao.dao.User.DeliverMessageStruct;
+import net.bangbao.dao.User.FeedbackStruct;
+import net.bangbao.dao.User.PasswordMessageStruct;
+import net.bangbao.dao.User.RegisterStruct;
+import net.bangbao.fragment.MessageFragment;
+
+	//请求的客户端
+	public class ApiClient extends BaseApiClient{
+	
+	public static final int CATEGRY_NEWS = 1;
+	public static final int CATEGRY_OUTLINE = 2;
+	public static final int CATEGRY_PROBLEMS = 3;
+	public static final int CATEGRY_SETTLE= 4;
+	
+    
+  //获取代理人信息
+    public  <T> void getConsultMess(int userId,String token,Object tag,Class<T> clazz,
+			final CallBack callBack){
+    	maps.clear();
+		maps.put("cmd", 1008);
+		maps.put("user_id", userId);
+		maps.put("token", token);
+		sendGsonRequest(maps,tag,clazz,callBack);
+	}
+    
+  //完善保险顾问个人信息
+    public  final <T> void deliverConsultMessage(DeliverMessageStruct del,
+    		int userId,String token,Object tag,Class<T> clazz,
+    		final CallBack callBack){
+    	Map<String,Object> maps = new HashMap<>();
+    	maps.put("cmd", 1007);
+    	maps.put("user_id", userId);
+    	maps.put("token", token);
+    	maps.put("sex", del.sex);
+    	maps.put("prov_id", del.prov_id);
+    	maps.put("bday_tmtp", del.bday_tmtp);
+    	maps.put("edu_id", del.edu_id);
+    	maps.put("ctt", del.ctt);
+    	maps.put("nick_nm", del.nick_nm);
+    	maps.put("bgn_tmtp", del.bgn_tmtp);
+    	maps.put("cert_no", del.cert_no);
+    	maps.put("image_url", del.image_url);
+    	maps.put("ins_say", del.ins_say);
+    	maps.put("honor_say", del.honor_say);
+    	sendGsonRequest(maps, tag, clazz, callBack);
+    }
+    
+    //修改消费者个人信息
+    public  final <T> void deliverCustomerMessage(CustomerMessageStruct cus,
+    		int userId,String token,Object tag,Class<T> clazz,
+    		final CallBack callBack){
+    	Map<String,Object> maps = new HashMap<>();
+    	maps.put("cmd", 1022);
+    	maps.put("user_id", userId);
+    	maps.put("token", token);
+    	maps.put("image_url", cus.image_url);
+    	maps.put("nick_nm", cus.nick_nm);
+    	sendGsonRequest(maps, tag, clazz, callBack);
+    }
+    
+    //修改密码
+    public final <T> void changePassword(PasswordMessageStruct pwd,
+    		String user,Object tag,Class<T> clazz,
+    		final CallBack callBack){
+    	Map<String,Object> maps = new HashMap<>();
+    	maps.put("cmd", 1004);
+    	maps.put("name", user);
+    	maps.put("old_pwd", pwd.old_pwd);
+    	maps.put("new_pwd", pwd.new_pwd);
+    	sendGsonRequest(maps, tag, clazz, callBack);
+    }
+    //获取我的客户列表
+    public final  <T> void getMycustomer(Page page,int userId,String token,Object tag,Class<T> clazz,
+			final CallBack callBack){
+		Map<String,Object> maps = new HashMap<>();
+		maps.put("cmd", 1010);
+		maps.put("user_id", userId);
+		maps.put("token", token);
+		maps.put("id_index", page.id_index);
+		maps.put("page_index", page.page_index);
+		maps.put("page_size", page.page_size);
+		maps.put("page_total", page.page_total);
+		sendGsonRequest(maps,tag,clazz,callBack);
+	}
+    //获取我的代理人列表
+    public final  <T> void getMyconsult(Page page,int userId,String token,Object tag,Class<T> clazz,
+			final CallBack callBack){
+		Map<String,Object> maps = new HashMap<>();
+		maps.put("cmd", 1009);
+		maps.put("user_id", userId);
+		maps.put("token", token);
+		maps.put("id_index", page.id_index);
+		maps.put("page_index", page.page_index);
+		maps.put("page_size", page.page_size);
+		maps.put("page_total", page.page_total);
+		sendGsonRequest(maps,tag,clazz,callBack);
+	}
+    //设置代理人信息
+    public <T> void setAgentMessage(int userId,String token,ConsultMessApi api,Object tag,
+    		final Class<T> clazz,final CallBack callBack){
+    	maps.clear();
+		maps.put("cmd", 1007);
+		maps.put("user_id", userId);
+		maps.put("token",token);
+		maps.put("sex", api.getSex());
+		maps.put("nick_nm", api.getNm_en());
+		maps.put("co_id", api.getCo_id());
+		maps.put("ctt", api.getCtt());
+		maps.put("prov_id", api.getProv_id());
+		maps.put("bday_tmtp", api.getBday_tmtp());
+		maps.put("edu_id", api.getEdu_id());
+		maps.put("bgn_tmtp", api.getBgn_tmtp());
+		maps.put("cert_no", api.getCert_no());
+		maps.put("image_url", api.getImage_url());
+		maps.put("ins_say", api.getIns_say());
+		maps.put("honor_say", api.getHonor_say());
+		sendGsonRequest(maps,tag,clazz,callBack);
+    }
+    //获取保险代理人列表
+    public <T> void getAgentList(Page page
+    		,int sex,int co_id,Object tag,final Class<T> clazz,final CallBack callBack){
+    	maps.clear();
+		maps.put("cmd", 1012);
+		maps.put("id_index", page.id_index);
+		maps.put("page_index",page.page_index );
+		maps.put("page_size", page.page_size);
+		if(sex != -1)
+		    maps.put("sex", sex);
+		if(co_id != -1)
+			maps.put("co_id", co_id);
+		sendGsonRequest(maps,tag,clazz,callBack);
+    }
+    //注册
+    public <T> void registerUser(RegisterStruct register,Object tag,final Class<T> clazz,
+    		final CallBack callBack){
+    	Log.d("json","register user first");
+    	final Map<String,Object> maps = new HashMap<>();
+		maps.put("cmd", 1001);
+		maps.put("name", register.name);
+		maps.put("pwd", register.pwd);
+		maps.put("type", register.type);
+		maps.put("prob_id", register.prob_id);
+		maps.put("prob_ans", register.prob_ans);
+		maps.put("nick_nm", "sdfsdf");
+		if(register.type == 2){
+			maps.put("co_id",register.co_id);
+			maps.put("ctt", register.ctt);
+		}
+		
+		new AsyncTask<Void, String, String>() {
+
+			@Override
+			protected String doInBackground(Void... params) {
+				
+				return new HttpClient().httpPost(HOST, maps);
+			}
+			protected void onPostExecute(String result) {
+				try {
+					callBack.success(new Gson().fromJson(result, clazz));
+				} catch (Exception e) {
+					e.printStackTrace();
+					callBack.fail("error");
+				}
+				
+			};
+		}.execute();
+    }
+    //登陆
+    public  <T> void loginUser(String username,String password,Object tag,Class<T> clazz,
+    		final CallBack callBack){
+    	maps.clear();
+		maps.put("cmd", 1002);
+		maps.put("name", username);
+		maps.put("pwd", password);
+		maps.put("sys_type", 2);
+		maps.put("soft_ver", "32");
+		maps.put("sys_ver", "32");
+		sendGsonRequest(maps,tag,clazz,callBack);
+    }
+	//获取置顶咨询
+	public  <T> void getHeadNews(Object tag,Class<T> clazz,
+			final CallBack callBack){
+		maps.clear();
+		maps.put("cmd", 1100);
+		sendGsonRequest(maps,tag,clazz,callBack);
+	}
+	
+	//获取咨询
+	public  <T> void getNewsRequest(Page page,int catgId,Object tag,Class<T> clazz,
+			final CallBack callback) {
+		maps.clear();
+		page = (page == null) ? new Page() :page;
+		maps.put("cmd", 1101);
+		maps.put("catg_id", catgId);
+		maps.put("id_index", page.id_index);
+		maps.put("page_index", page.page_index);
+		maps.put("page_size", page.page_size);
+		sendGsonRequest(maps, tag, clazz, callback);
+	}
+	
+    //获取保险类别列表报文
+    public <T> void getInsuranceCategry(Page page ,Object tag,
+    		Class<T> clazz,final CallBack callback){
+    	
+    	maps.clear();
+		page = (page == null) ? new Page() :page;
+		maps.put("cmd", 1019);
+		maps.put("id_index", page.id_index);
+		maps.put("page_index", page.page_index);
+		maps.put("page_size", page.page_size);
+		sendGsonRequest(maps, tag, clazz, callback);
+    }
+  //获取理赔咨询 ids[0] 险种id ids[1] 公司id
+    public  <T> void getSettleMessage(int[] ids,Object tag,
+    		Class<T> clazz,final CallBack callback){
+    	
+    	maps.clear();
+		maps.put("cmd", 1104);
+		maps.put("catg_id", ids[0]);
+		maps.put("ins_co_id",ids[1]);
+		sendGsonRequest(maps, tag, clazz, callback);
+    }
+    //根据省份id查城市列表
+    public  <T> void getCitys(Page page,int pro_id,Object tag,Class<T> clazz,final CallBack callback){
+    	maps.clear();
+		page = (page == null) ? new Page() :page;
+		maps.put("cmd", 1020);
+		maps.put("prov_id", pro_id);
+		maps.put("id_index", page.id_index);
+		maps.put("page_index", page.page_index);
+		maps.put("page_size", page.page_size);
+		sendGsonRequest(maps, tag, clazz, callback);
+    }
+    //获取保险公司列表报文
+    public  <T> void getCompanys(Page page,int area_id,Object tag,Class<T> clazz,final CallBack callback){
+    	maps.clear();
+		page = (page == null) ? new Page() :page;
+		maps.put("cmd", 1017);
+		maps.put("area_id", area_id);
+		maps.put("id_index", page.id_index);
+		maps.put("page_index", page.page_index);
+		maps.put("page_size", page.page_size);
+		sendGsonRequest(maps, tag, clazz, callback);
+    }
+    //获取险种保险列表
+    public  <T> void getInsuCatg(Page page,int catg_id,Object tag,Class<T> clazz,final CallBack callback){
+    	maps.clear();
+		page = (page == null) ? new Page() :page;
+		maps.put("cmd", 1102);
+		maps.put("catg_id", catg_id);
+		maps.put("id_index", page.id_index);
+		maps.put("page_index", page.page_index);
+		maps.put("page_size", page.page_size);
+		sendGsonRequest(maps, tag, clazz, callback);
+    }
+  //获取保险公司保险列表
+    public  <T> void getCommInsu(Page page,int catg_id,Object tag,Class<T> clazz,final CallBack callback){
+    	maps.clear();
+		page = (page == null) ? new Page() :page;
+		maps.put("cmd", 1103);
+		maps.put("ins_co_id", catg_id);
+		maps.put("id_index", page.id_index);
+		maps.put("page_index", page.page_index);
+		maps.put("page_size", page.page_size);
+		sendGsonRequest(maps, tag, clazz, callback);
+    }
+    //获取定点医院列表
+    public  <T> void getLocateHospotal(Page page,int ins_co_id,int city_id,Object tag,Class<T> clazz,
+    		final CallBack callback){
+    	maps.clear();
+		page = (page == null) ? new Page() :page;
+		maps.put("cmd", 1018);
+		maps.put("ins_co_id", ins_co_id);
+		maps.put("city_id", city_id);
+		maps.put("id_index", page.id_index);
+		maps.put("page_index", page.page_index);
+		maps.put("page_size", page.page_size);
+		sendGsonRequest(maps, tag, clazz, callback);
+    }
+    //意见反馈
+    public  <T> void feedBack(FeedbackStruct feedback,Object tag,Class<T> clazz,
+    		final CallBack callBack){
+    	Log.d("json","feedback first");
+    	maps.clear();
+		maps.put("cmd", 1014);
+		maps.put("user_id",119);
+		maps.put("token", "tokenvaluenotdefine");
+		maps.put("sugg", feedback.sugg);
+		maps.put("ctt", feedback.ctt);
+		sendGsonRequest(maps,tag,clazz,callBack);
+    }
+    
+    //检测版本更新
+    public final  <T> void getVersion(Object tag,Class<T> clazz,
+			final CallBack callBack){
+		Map<String,Object> maps = new HashMap<>();
+		maps.put("cmd", 1003);
+		maps.put("sys_type", 2);
+		sendGsonRequest(maps,tag,clazz,callBack);
+	}
+    
+    
+}

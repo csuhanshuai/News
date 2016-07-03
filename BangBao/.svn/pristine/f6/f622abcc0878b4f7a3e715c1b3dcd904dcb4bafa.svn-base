@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:background="@color/white">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:paddingLeft="10dp">
+        
+        <ImageView 
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/arrow_left"
+            android:layout_alignParentLeft="true"
+            android:layout_centerInParent="true"
+            android:onClick="back"/>
+        
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="客户领取iWatch信息核实"
+            android:layout_centerInParent="true"
+            android:textColor="@color/black"
+            android:textSize="18sp"/>
+        
+    </RelativeLayout>
+     <ScrollView
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:scrollbars="vertical"
+         >
+        <LinearLayout android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:gravity="left|center"
+                android:orientation="horizontal"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/illustrate1"
+                    android:gravity="left"
+                    android:textColor="@color/blue" />
+                
+            </LinearLayout>
+            <LinearLayout 
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="13dp"
+                    android:gravity="left|center"
+                    android:text="@string/policyname"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@color/black" />
+                
+                <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:gravity="left|center"
+                android:orientation="horizontal"
+                android:background="@drawable/corner_view"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp" >
+
+                <EditText 
+                    android:id="@+id/policyname"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#C6E6F6"
+                    android:layout_marginLeft="5dp"/>
+                </LinearLayout>
+                
+            </LinearLayout>
+            <LinearLayout 
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="13dp"
+                    android:gravity="left|center"
+                    android:text="@string/policyorder"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@color/black" />
+                
+                <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:gravity="left|center"
+                android:orientation="horizontal"
+                android:background="@drawable/corner_view"
+                android:layout_marginLeft="23dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp" >
+
+                <EditText 
+                    android:id="@+id/policyorder"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#C6E6F6"
+                    android:layout_marginLeft="5dp"/>
+                </LinearLayout>
+                
+            </LinearLayout>
+            <LinearLayout 
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="13dp"
+                    android:gravity="left|center"
+                    android:text="@string/policymoney"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@color/black" />
+                
+                <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:gravity="left|center"
+                android:orientation="horizontal"
+                android:background="@drawable/corner_view"
+                android:layout_marginLeft="23dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp" >
+
+                <EditText 
+                    android:id="@+id/policymoney"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#C6E6F6"
+                    android:layout_marginLeft="5dp"/>
+                </LinearLayout>
+                
+            </LinearLayout>
+            <LinearLayout 
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="13dp"
+                    android:gravity="left|center"
+                    android:text="@string/consultname"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@color/black" />
+                
+                <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:gravity="left|center"
+                android:orientation="horizontal"
+                android:background="@drawable/corner_view"
+                android:layout_marginLeft="23dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp" >
+
+                <EditText 
+                    android:id="@+id/consultname"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#C6E6F6"
+                    android:layout_marginLeft="5dp"/>
+                </LinearLayout>
+                
+            </LinearLayout>
+            <LinearLayout 
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="13dp"
+                    android:gravity="left|center"
+                    android:text="@string/contactstyle"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@color/black" />
+                
+                <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:gravity="left|center"
+                android:orientation="horizontal"
+                android:background="@drawable/corner_view"
+                android:layout_marginLeft="23dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp" >
+
+                <EditText 
+                    android:id="@+id/contactstyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#C6E6F6"
+                    android:layout_marginLeft="5dp"/>
+                </LinearLayout>
+                
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:gravity="left|center"
+                android:orientation="horizontal"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/giftaddress"
+                    android:gravity="center"
+                    android:textColor="@color/black" />
+                
+            </LinearLayout>
+           <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:gravity="left|center"
+                android:orientation="horizontal"
+                android:background="@drawable/corner_view"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp" >
+
+                <EditText 
+                    android:id="@+id/giftaddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#C6E6F6"
+                    android:layout_marginLeft="5dp"/>
+                </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:gravity="left|center"
+                android:orientation="horizontal"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/contactstyles"
+                    android:gravity="center"
+                    android:textColor="@color/black" />
+                
+            </LinearLayout>
+            <LinearLayout android:orientation="horizontal"
+            	android:layout_width="match_parent"
+                android:layout_height="40dp"
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:gravity="left|center"
+                android:orientation="horizontal"
+                android:background="@drawable/corner_view"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="80dp"
+                android:layout_marginTop="5dp" >
+
+                <EditText 
+                    android:id="@+id/contactstyles"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#C6E6F6"
+                    android:layout_marginLeft="5dp"/>
+                </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/change"
+                    android:layout_marginRight="10dp"
+                    android:textColor="@color/black" />
+                </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:gravity="left|center"
+                android:orientation="horizontal"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp" >
+                
+                
+            </LinearLayout>
+            
+         </LinearLayout>
+	</ScrollView>
+</LinearLayout>

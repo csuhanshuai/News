@@ -1,0 +1,150 @@
+package net.bangbao.ui;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import net.bangbao.AppConfig;
+import net.bangbao.R;
+import net.bangbao.UserConfig;
+import net.bangbao.adapter.CustomerAdapter;
+import net.bangbao.base.BaseActivity;
+import net.bangbao.base.BaseApiClient.Page;
+import net.bangbao.common.UIHelper;
+import net.bangbao.dao.CustomerApi;
+import net.bangbao.dao.CustomerApi.CustomerInfo;
+import net.bangbao.network.ApiClient;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+
+/**
+ * @author hs
+ * 我的客户
+ */
+public class MyCustomerActivity extends BaseActivity{
+	
+	private RelativeLayout r;
+	private ListView listView;
+	private List<CustomerInfo> customerList = new ArrayList<CustomerInfo>();
+	private CustomerAdapter customerAdapter;
+	private UserConfig userConfig = AppConfig.getUser();
+	private Page page = new Page();
+	private ApiClient apiClient = new ApiClient();
+	
+	@Override
+	protected void onCreate(Bundle arg0) {
+		super.onCreate(arg0);
+		setContentView(R.layout.customer_list);
+		initViews();
+		
+		 IntentFilter intentFiler = new IntentFilter();
+	     intentFiler.addAction(MainActivity.MSGACTION);
+	     registerReceiver(msgReceiver, intentFiler);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		unregisterReceiver(msgReceiver);
+	}
+	
+	
+	private void initViews() {
+		r = (RelativeLayout) findViewById(R.id.go_back5);
+		r.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				onBackPressed();
+			}
+		});
+		
+		listView = (ListView) findViewById(R.id.customer_list);
+		listView.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				Intent intent = new Intent(MyCustomerActivity.this,ChatActivity.class);
+				intent.putExtra("target_id", String.valueOf(customerList.get(position).getUser_id()));
+				intent.putExtra("target_categry",ChatActivity.TaCustomer);
+				MyCustomerActivity.this.startActivity(intent);
+			}
+		});
+		customerAdapter = new CustomerAdapter(customerList,this);
+		listView.setAdapter(customerAdapter);
+		getCustomer();
+	}
+	protected void getCustomer(){
+			apiClient.getMycustomer(page, userConfig.getUserId(), userConfig.getUserToken(), this, CustomerApi.class,
+					new ApiClient.CallBack<CustomerApi>(){
+
+						@Override
+						public void success(CustomerApi api) {
+							if(api == null)return;
+							if(api.getRet_cd() == 97){
+								UIHelper.showToastMessage("没有记录了！");
+								return;
+							}
+							if(api.getItem() == null)return;
+							customerList.addAll(api.getItem());
+							customerAdapter.notifyDataSetChanged();
+							page.id_index = api.getId_index();
+							page.page_total = api.getPage_total();
+							page.page_size = api.getPage_size();
+							for(int i = 1;i < page.page_total;i++) {
+								page.page_index = api.getPage_index() + 1;
+								getCustomer1();
+							}
+						}
+
+						@Override
+						public void fail(String error) {
+							Log.d("json",error);
+						}
+				
+			});
+	}
+	protected void getCustomer1(){
+			apiClient.getMycustomer(page, userConfig.getUserId(), userConfig.getUserToken(), this, CustomerApi.class,
+					new ApiClient.CallBack<CustomerApi>(){
+
+						@Override
+						public void success(CustomerApi api) {
+							if(api == null)return;
+							if(api.getRet_cd() == 97){
+								UIHelper.showToastMessage("没有记录了！");
+								return;
+							}
+							if(api.getItem() == null)return;
+							customerList.addAll(api.getItem());
+							customerAdapter.notifyDataSetChanged();
+							page.id_index = api.getId_index();
+							page.page_total = api.getPage_total();
+							page.page_size = api.getPage_size();
+						}
+
+						@Override
+						public void fail(String error) {
+							Log.d("json",error);
+						}
+				
+			});
+	}
+	private BroadcastReceiver msgReceiver = new BroadcastReceiver(){
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			customerAdapter.notifyDataSetChanged();
+		}
+	};
+
+}

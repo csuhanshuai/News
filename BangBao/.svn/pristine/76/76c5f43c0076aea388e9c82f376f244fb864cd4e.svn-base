@@ -1,0 +1,49 @@
+package net.bangbao.dao;
+
+import java.io.Serializable;
+import java.util.List;
+
+import net.bangbao.base.BaseApi;
+
+
+public class CustomerApi extends BaseApi {
+	private List<CustomerInfo> item;
+	
+	public List<CustomerInfo> getItem() {
+		return item;
+	}
+
+	public void setItem(List<CustomerInfo> item) {
+		this.item = item;
+	}
+	
+	public final static class CustomerInfo implements Serializable {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -6934976511522627324L;
+		private int update_tmtp;
+		private String nick_nm;
+		private int user_id;
+		public int getUpdate_tmtp() {
+			return update_tmtp;
+		}
+		public void setUpdate_tmtp(int update_tmtp) {
+			this.update_tmtp = update_tmtp;
+		}
+		public String getNick_nm() {
+			return nick_nm;
+		}
+		public void setNick_nm(String nick_nm) {
+			this.nick_nm = nick_nm;
+		}
+		public int getUser_id() {
+			return user_id;
+		}
+		public void setUser_id(int user_id) {
+			this.user_id = user_id;
+		}
+		
+	}
+
+}

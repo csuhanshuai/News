@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:background="@drawable/test_result"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/percent"
+        android:layout_marginTop="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal" >
+    
+    
+    <TextView 
+        android:layout_width="120dp"
+        android:layout_height="fill_parent"
+        android:paddingLeft="5dp"
+        android:text="1.保费支出比例："
+        android:gravity="center_vertical"
+        android:textSize="13sp"/>
+    
+    <TextView 
+        android:id="@+id/id_percent"
+        android:layout_width="120dp"
+        android:layout_height="fill_parent"
+        android:paddingLeft="5dp"
+        android:gravity="center_vertical"
+        android:textSize="13sp"/>
+    
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/advice"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal" >
+    
+        <TextView 
+        android:layout_width="90dp"
+        android:layout_height="fill_parent"
+        android:paddingLeft="5dp"
+        android:text="2.推荐额度："
+        android:gravity="center_vertical"
+        android:textSize="13sp"/>
+        
+        <TextView 
+        android:layout_width="30dp"
+        android:layout_height="fill_parent"
+        android:text="意外"
+        android:gravity="center_vertical"
+        android:textSize="10sp"/>
+        
+        <TextView 
+        android:id="@+id/id_accident"
+        android:layout_width="30dp"
+        android:layout_height="fill_parent"
+        android:gravity="center_vertical"
+        android:paddingLeft="5dp"
+        android:textSize="13sp"/>
+        
+        <TextView 
+        android:layout_width="30dp"
+        android:layout_height="fill_parent"
+        android:text="健康"
+        android:gravity="center_vertical"
+        android:textSize="10sp"/>
+        
+        <TextView 
+        android:id="@+id/id_health"
+        android:layout_width="30dp"
+        android:layout_height="fill_parent"
+        android:gravity="center_vertical"
+        android:textSize="10sp"/>
+        
+        <TextView 
+        android:layout_width="30dp"
+        android:layout_height="fill_parent"
+        android:text="养老"
+        android:gravity="center_vertical"
+        android:textSize="10sp"/>
+        
+        <TextView 
+        android:id="@+id/id_old"
+        android:layout_width="30dp"
+        android:layout_height="fill_parent"
+        android:gravity="center_vertical"
+        android:paddingLeft="5dp"
+        android:textSize="13sp"/>
+        
+        <TextView 
+        android:layout_width="30dp"
+        android:layout_height="fill_parent"
+        android:text="投资"
+        android:gravity="center_vertical"
+        android:textSize="10sp"/>
+        
+        <TextView 
+        android:id="@+id/id_invest"
+        android:layout_width="30dp"
+        android:layout_height="fill_parent"
+        android:gravity="center_vertical"
+        android:textSize="10sp"/>
+    
+        
+    </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/preferential"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="120dp"
+            android:layout_height="fill_parent"
+            android:gravity="center_vertical"
+            android:paddingLeft="5dp"
+            android:text="3.投保成员顺序："
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/id_person"
+            android:layout_width="120dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.82"
+            android:gravity="center_vertical"
+            android:paddingLeft="5dp"
+            android:textSize="10sp" />
+    </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/order"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal" >
+        
+        <TextView
+            android:layout_width="120dp"
+            android:layout_height="fill_parent"
+            android:gravity="center_vertical"
+            android:paddingLeft="5dp"
+            android:text="4.投保顺序："
+            android:textSize="13sp" />
+    
+        <TextView 
+        android:id="@+id/id_one"
+        android:layout_width="30dp"
+        android:layout_height="fill_parent"
+        android:gravity="center_vertical"
+        android:textSize="10sp"/>
+        
+        <TextView 
+        android:id="@+id/id_two"
+        android:layout_width="30dp"
+        android:layout_height="fill_parent"
+        android:gravity="center_vertical"
+        android:textSize="10sp"/>
+        
+        <TextView 
+        android:id="@+id/id_three"
+        android:layout_width="30dp"
+        android:layout_height="fill_parent"
+        android:gravity="center_vertical"
+        android:textSize="10sp"/>
+        
+        <TextView 
+        android:id="@+id/id_four"
+        android:layout_width="30dp"
+        android:layout_height="fill_parent"
+        android:gravity="center_vertical"
+        android:textSize="10sp"/>
+        
+    </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/reason"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal" >
+        
+        <TextView
+            android:layout_width="120dp"
+            android:layout_height="fill_parent"
+            android:gravity="center_vertical"
+            android:paddingLeft="5dp"
+            android:text="5.理由："
+            android:textSize="13sp" />
+    
+        
+    </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/reason_detail"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:orientation="horizontal" >
+        
+        <TextView 
+        android:id="@+id/detail"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center_vertical"
+        android:textSize="10sp"/>
+    
+        
+        
+    </LinearLayout>
+    
+    <Button 
+            android:id="@+id/finish"
+            android:text="好哒"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            />
+
+</LinearLayout>

@@ -1,0 +1,50 @@
+package net.bangbao.dao;
+
+public class User {
+	
+	private String name;
+	
+	
+	
+	
+	public static final class RegisterStruct{
+		
+		public String name;
+		public String pwd;
+		public int type;
+		public int prob_id;
+		public String prob_ans;
+		public String nm_en;
+		public int  co_id;
+		public String ctt;
+	}
+	public static final class FeedbackStruct {
+		public String sugg;
+		public String ctt;
+
+	}
+	
+	public static final class DeliverMessageStruct{
+		public Integer sex;
+		public Integer prov_id;
+		public Long bday_tmtp;
+		public Integer edu_id;
+		public Long bgn_tmtp;
+		public String cert_no;
+		public Integer co_id;
+		public String ctt;
+		public String ins_say;
+		public String honor_say;
+		public String image_url;
+		public String nick_nm;
+	}
+	
+	public static final class CustomerMessageStruct{
+		public String nick_nm;
+	}
+	
+	public static final class PasswordMessageStruct{
+		public String old_pwd;
+		public String new_pwd;
+	}
+}

@@ -1,0 +1,96 @@
+package net.bangbao.ui;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import net.bangbao.AppConfig;
+import net.bangbao.R;
+import net.bangbao.UserConfig;
+import net.bangbao.adapter.CustomerAdapter;
+import net.bangbao.adapter.InsuCatgAdapter;
+import net.bangbao.base.BaseActivity;
+import net.bangbao.dao.AgentListApi;
+import net.bangbao.dao.ConsultMessApi;
+import net.bangbao.dao.CustomerApi;
+import net.bangbao.dao.CustomerApi.CustomerInfo;
+import net.bangbao.dao.InsuCatgApi.InsuCatgInfo;
+import net.bangbao.http.ApiClient;
+import net.bangbao.http.BaseApiClient.Page;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.AdapterView.OnItemClickListener;
+
+public class MyCustomerActivity extends BaseActivity{
+	private ListView listView1;
+	private List<CustomerInfo> customerList = new ArrayList<>();
+	private CustomerAdapter customerAdapter;
+	
+	private UserConfig userConfig = AppConfig.getUser();
+	
+	private Page page = new Page();
+	@Override
+	protected void onCreate(Bundle arg0) {
+		super.onCreate(arg0);
+		setContentView(R.layout.customer_list);
+		initViews();
+	}
+
+	private void initViews() {
+		
+		listView1 = (ListView) findViewById(R.id.customer_list);
+		listView1.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				Intent intent = new Intent(MyCustomerActivity.this,ChatToConsultActivity.class);
+				intent.putExtra("key", MyCustomerActivity.this.customerList.get(position).getUser_id());
+				MyCustomerActivity.this.startActivity(intent);
+			}
+		});
+		customerAdapter = new CustomerAdapter(customerList,this);
+		listView1.setAdapter(customerAdapter);
+		jundeRequest();
+		
+		
+	}
+	
+	protected void jundeRequest() {
+		customerList.clear();
+		new ApiClient().getMycustomer(page, userConfig.getUserId(), userConfig.getUserToken(), this, CustomerApi.class,
+				new ApiClient.CallBack<CustomerApi>(){
+
+					@Override
+					public void success(CustomerApi api) {
+						if(api == null)return;
+						if(api.getItem() == null)return;
+						int total = api.getPage_total();
+						for(int i = 1;i <= total;i++)
+						page.page_index = api.getPage_index() + 1;
+						jundeRequest();
+						customerList.addAll(api.getItem());
+						customerAdapter.notifyDataSetChanged();
+					}
+
+					@Override
+					public void fail(String error) {
+						// TODO Auto-generated method stub
+						Log.d("json",error);
+					}
+			
+		});
+}
+	
+	public void back(View v)
+	{
+		onBackPressed();
+	}
+
+}

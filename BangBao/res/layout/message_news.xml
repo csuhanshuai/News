@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFFFFF" 
+  	xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <net.bangbao.common.MyGallery
+        android:id="@+id/mygallery"
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+        android:src="@drawable/news_ad"
+        android:scaleType="fitXY"
+        />
+
+    <ListView
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:id="@+id/list_message_news"
+        android:dividerHeight="0dp"
+        android:fastScrollEnabled="true"
+        android:scrollbars="none"
+        android:listSelector="#00000000" 
+        android:cacheColorHint="#00000000" 
+        android:headerDividersEnabled="true" 
+        android:footerDividersEnabled="true" 
+        android:smoothScrollbar="true" 
+        android:dividerPadding="15.0dip"
+         />
+
+</LinearLayout>

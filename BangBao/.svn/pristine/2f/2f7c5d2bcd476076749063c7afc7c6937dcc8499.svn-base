@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 聊天 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
+    
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="#F7F7F7"
+        >
+        
+        <FrameLayout 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_alignParentLeft="true"
+            android:padding="10dp"
+            android:onClick="back"
+            android:id="@+id/back"
+            >
+            <ImageView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/arrow_left"
+            />
+        </FrameLayout>
+        
+        <TextView 
+            android:id="@+id/agent_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/back_icon"
+            android:layout_centerInParent="true"
+            android:text="顾问"
+            android:textColor="@color/black"
+            android:gravity="center"
+            android:layout_marginLeft="10dp"
+            />
+    </RelativeLayout>
+    <ListView
+        android:id="@+id/msg_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="#0000" />
+
+    <View 
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/gray"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp" 
+        >
+
+        <ImageView 
+            android:id="@+id/button_keyboard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/rc_message_bar_keyboard"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="10dp"
+            android:visibility="gone"/>
+        
+        <Button 
+            android:id="@+id/voice_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:text="按住说话"
+            android:visibility="gone"/>
+        
+        <LinearLayout 
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_weight="1.0"
+            android:id="@+id/keyborad_layout"
+            android:background="@color/white">
+             <net.bangbao.widget.EmojiEditText
+                  android:id="@+id/input_text"
+                  android:layout_width="0dp"
+                  android:layout_height="match_parent"
+                  android:layout_weight="1.0"
+                  android:hint="说点什么吧"
+                  android:layout_marginRight="10dp"
+                  android:textSize="13dp"
+                  android:background="@drawable/layout_circle"
+                  android:paddingLeft="10dp" />
+             <ImageView 
+                  android:id="@+id/button_enum"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:src="@drawable/rc_smiley_hover"
+                  android:layout_gravity="center_vertical"
+                  android:layout_marginRight="10dp"
+                  android:visibility="gone"/>
+             <Button
+                 android:id="@+id/send"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="发 \t送"
+                 android:background="@drawable/layout_circle"
+                 android:paddingLeft="15dp"
+                 android:paddingRight="15dp"
+                 android:paddingTop="10dp"
+                 android:paddingBottom="10dp" />
+        </LinearLayout>
+    </LinearLayout>
+    <GridView
+        android:visibility="gone"
+        android:id="@+id/start_grid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:columnWidth="10dp"
+        android:horizontalSpacing="4dp"
+        android:numColumns="10"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="4dp" >
+    </GridView>
+</LinearLayout>

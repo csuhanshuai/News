@@ -1,0 +1,259 @@
+package net.bangbao.ui;
+
+import io.rong.imlib.RongIMClient.ConversationType;
+import io.rong.imlib.RongIMClient.SendMessageCallback;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import net.bangbao.AppConfig;
+import net.bangbao.R;
+import net.bangbao.adapter.EmojiAdapter;
+import net.bangbao.adapter.MsgAdapter;
+import net.bangbao.base.BaseActivity;
+import net.bangbao.dao.ConsultMessApi;
+import net.bangbao.dao.Msg;
+import net.bangbao.database.BangbaoDataBaseHelper;
+import net.bangbao.database.DatabaseUtils;
+import net.bangbao.network.RongYunClient;
+import net.bangbao.utils.Utils;
+import net.bangbao.widget.EmojiEditText;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.Html;
+import android.text.Html.ImageGetter;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
+
+/*
+ * author:mosl
+ * descrtion:聊天
+ * 调用者需要传递 两个参数：target_id , target_categry
+ * target_username
+ */
+public class ChatActivity extends BaseActivity implements SendMessageCallback{
+
+	public static final String TAG = ChatActivity.class.getName();
+
+	public static final int TaCustomer = 0;// 消费者
+	public static final int TaAgent = 1;// 顾问
+	public static final int TaService = 2; // 客服
+	public static final int TaCustom = 3; // 意见反馈客服
+	public static final int TaAppleWatch = 4; // 是否参加AppleWatch的客服
+	private ListView msgListView;
+	private EmojiEditText inputText;
+	private Button send;
+	private MsgAdapter adapter;
+	private List<Msg> msgList = new ArrayList<Msg>();
+
+	private String mTtarget_id; // 聊天目标的id
+	private String mTarget_username;
+	private int target_categry = TaCustomer; // 0:目标是顾客 1：目标是顾问 2：客服3:意见反馈客服4:Applewatch客服
+
+	private GridView mGridview;
+	private EmojiAdapter mAdapter;
+	private ImageView button_enum, button_keyboard;
+	private boolean isEnmoiVisible;
+	// Editable 是一个接口，作者巧妙的在接口中实现了工厂方法。
+	private Editable.Factory mEditableFactory = Editable.Factory.getInstance();
+
+	private Button voice_button;
+	private LinearLayout keyborad_layout;
+	private boolean isKeyBoard = true;
+	// 代理人
+	private ConsultMessApi agent;
+	private TextView agentName;
+	private RongYunClient client = RongYunClient.getInstance();
+	/** 聊天历史记录 **/
+	private BangbaoDataBaseHelper dataBaseHelper;
+	private SQLiteDatabase mSqliteDataBase;
+
+	private BroadcastReceiver msgReceiver = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+
+			String text = intent.getStringExtra("chat");
+			String target_id = intent.getStringExtra("sender_id");
+			
+			if(target_id.endsWith(mTtarget_id))
+			{
+				Msg msg = new Msg(text, Msg.TYPE_RECEIVED, Utils.getTimetmtp(),
+						null, null);
+				DatabaseUtils.insertMsg(mSqliteDataBase,
+						String.valueOf(AppConfig.userconfig.getUserId()),
+						target_id, text, Msg.TYPE_RECEIVED);
+
+				msgList.add(msg);
+				adapter.notifyDataSetChanged();
+				msgListView.setSelection(msgList.size());
+			}
+			
+		}
+
+	};
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_chat);
+		init(); // 初始化
+		dataBaseHelper = new BangbaoDataBaseHelper(this);
+		mSqliteDataBase = dataBaseHelper.getWritableDatabase();
+		button_enum.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+
+				InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+				boolean isOpen = imm.isActive();// isOpen若返回true，则表示输入法打开
+				/** 如果打开 **/
+				if (isOpen) {
+					imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+				}
+
+				if (!isEnmoiVisible) {
+					mGridview.setVisibility(View.VISIBLE);
+					isEnmoiVisible = true;
+				} else {
+					isEnmoiVisible = false;
+					mGridview.setVisibility(View.GONE);
+				}
+			}
+		});
+		keyborad_layout = (LinearLayout) findViewById(R.id.keyborad_layout);
+		button_keyboard = (ImageView) findViewById(R.id.button_keyboard);
+		button_keyboard.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+
+				if (isKeyBoard) {
+					keyborad_layout.setVisibility(View.GONE);
+					voice_button.setVisibility(View.VISIBLE);
+					isKeyBoard = false;
+				} else {
+					keyborad_layout.setVisibility(View.VISIBLE);
+					voice_button.setVisibility(View.GONE);
+					isKeyBoard = true;
+				}
+			}
+		});
+		voice_button = (Button) findViewById(R.id.voice_button);
+		msgListView.setAdapter(adapter);
+		send.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+
+				DatabaseUtils.insertMsg(mSqliteDataBase,
+						String.valueOf(AppConfig.userconfig.getUserId()),
+						mTtarget_id, inputText.getText().toString(),
+						Msg.TYPE_SENT);
+				if (!"".equals(inputText.getText().toString())) {
+					String text = inputText.getText().toString();
+					Msg msg = new Msg(text,
+							Msg.TYPE_SENT, Utils.getTimetmtp(), null, null);
+					msgList.add(msg);
+					adapter.notifyDataSetChanged();
+					msgListView.setSelection(msgList.size());
+					inputText.setText("");
+					client.sendTextMessage(ConversationType.PRIVATE, mTtarget_id,
+							text, ChatActivity.this);
+				}
+			}
+		});
+		// 注册监听
+		IntentFilter intentFilter = new IntentFilter();
+		intentFilter.addAction("net.bangbao.chat_to_consult");
+		registerReceiver(msgReceiver, intentFilter);
+		// 查数据库 && 历史记录
+		fromSql();
+	}
+
+	private void init() {
+
+		// 获取到target
+		Intent intent = getIntent();
+		if (intent == null)
+			finish();
+		agentName = (TextView) findViewById(R.id.name);
+		mTtarget_id = intent.getStringExtra("target_id");
+		target_categry = intent.getIntExtra("target_categry", TaCustomer);
+		mTarget_username = intent.getStringExtra("target_username");
+		if(mTarget_username != null){
+			agentName.setText(mTarget_username);
+		}
+		if (mTtarget_id == null)
+			finish();
+		if(target_categry == TaCustom)
+			agentName.setText("意见反馈客服");
+		else if(target_categry == TaAppleWatch)
+			agentName.setText("AppleWatch客服");
+		adapter = new MsgAdapter(this, R.layout.msg_item, msgList);
+		inputText = (EmojiEditText) findViewById(R.id.input_text);
+		send = (Button) findViewById(R.id.send);
+		msgListView = (ListView) findViewById(R.id.msg_list_view);
+		View headView = LayoutInflater.from(this).inflate(
+				R.layout.chat_alert_head, null);
+		msgListView.addHeaderView(headView);
+		mGridview = (GridView) findViewById(R.id.start_grid);
+		mAdapter = new EmojiAdapter(this);
+		button_enum = (ImageView) findViewById(R.id.button_enum);
+	}
+
+	/** 从数据库中查历史 **/
+	private void fromSql() {
+
+		List<Msg> list = DatabaseUtils.queryMsg(mSqliteDataBase, AppConfig
+				.getUser().getUserId(), Integer.valueOf(mTtarget_id));
+		if (list != null) {
+			Log.d("test", list.size() + "--size");
+			msgList.addAll(list);
+			adapter.notifyDataSetChanged();
+		}
+
+	}
+
+	protected void onDestroy() {
+		super.onDestroy();
+		unregisterReceiver(msgReceiver);
+	};
+
+	public void back(View v) {
+		onBackPressed();
+	}
+
+	@Override
+	public void onError(int arg0, ErrorCode arg1) {
+
+	}
+
+	@Override
+	public void onProgress(int arg0, int arg1) {
+
+	}
+
+	@Override
+	public void onSuccess(int arg0) {
+		Log.d(TAG, "发送成功");
+
+	}
+}

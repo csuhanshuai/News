@@ -1,0 +1,125 @@
+package net.bangbao.ui;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.AdapterView.OnItemClickListener;
+import net.bangbao.AppConfig;
+import net.bangbao.R;
+import net.bangbao.UserConfig;
+import net.bangbao.adapter.ConsultAdapter;
+import net.bangbao.base.BaseActivity;
+import net.bangbao.dao.ConsultApi;
+import net.bangbao.dao.AgentListApi.AgentInfo;
+import net.bangbao.dao.ConsultApi.ConsultInfo;
+import net.bangbao.http.ApiClient;
+import net.bangbao.http.BaseApiClient.Page;
+
+public class MyConsultActivity extends BaseActivity {
+	
+	private ListView listView1;
+	private List<AgentInfo> agents = new ArrayList<AgentInfo>();
+	private List<ConsultInfo> consultList = new ArrayList<>();
+	private ConsultAdapter consultAdapter;
+	
+	private UserConfig userConfig = AppConfig.getUser();
+	
+	private Page page = new Page();
+	@Override
+	protected void onCreate(Bundle arg0) {
+		super.onCreate(arg0);
+		setContentView(R.layout.consult_list);
+		initViews();
+	}
+
+	private void initViews() {
+		
+		listView1 = (ListView) findViewById(R.id.consult_list);
+		listView1.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				Intent intent = new Intent(MyConsultActivity.this,ConsultDetailActivity.class);
+				Bundle bundle = new Bundle();
+				bundle.putSerializable("agent", agents.get(position));
+				intent.putExtra("bundle", bundle);
+				MyConsultActivity.this.startActivity(intent);
+			}
+		});
+		consultAdapter = new ConsultAdapter(consultList,this);
+		listView1.setAdapter(consultAdapter);
+		jundeRequest();
+		
+		
+	}
+	
+	protected void jundeRequest() {
+//		customerList.clear();
+		new ApiClient().getMyconsult(page, userConfig.getUserId(), userConfig.getUserToken(), this, ConsultApi.class,
+				new ApiClient.CallBack<ConsultApi>(){
+
+					@Override
+					public void success(ConsultApi api) {
+						if(api == null)return;
+						if(api.getItem() == null)return;
+						int total = api.getPage_total();
+						consultList.addAll(api.getItem());
+						consultAdapter.notifyDataSetChanged();
+						page.id_index = api.getId_index();
+						page.page_total = api.getPage_total();
+						for(int i = 1;i < total;i++){
+							page.page_index = api.getPage_index() + 1;
+							jundeRequest1();
+//							customerList.addAll(api.getItem());
+//							customerAdapter.notifyDataSetChanged();
+						}
+//						jundeRequest1();
+//						customerList.addAll(api.getItem());
+//						customerAdapter.notifyDataSetChanged();
+					}
+
+					@Override
+					public void fail(String error) {
+						// TODO Auto-generated method stub
+						Log.d("json",error);
+					}
+			
+		});
+}
+	protected void jundeRequest1() {
+//		customerList.clear();
+		new ApiClient().getMyconsult(page, userConfig.getUserId(), userConfig.getUserToken(), this, ConsultApi.class,
+				new ApiClient.CallBack<ConsultApi>(){
+
+					@Override
+					public void success(ConsultApi api) {
+						if(api == null)return;
+						if(api.getItem() == null)return;
+							consultList.addAll(api.getItem());
+							consultAdapter.notifyDataSetChanged();
+							page.id_index = api.getId_index();
+							page.page_total = api.getPage_total();
+					}
+
+					@Override
+					public void fail(String error) {
+						// TODO Auto-generated method stub
+						Log.d("json",error);
+					}
+			
+		});
+}
+	
+	public void back(View v)
+	{
+		onBackPressed();
+	}
+
+}

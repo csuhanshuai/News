@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 文章详情 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:id="@+id/acticle_root" >
+    
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:paddingLeft="10dp">
+        
+        <ImageView 
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/arrow_left"
+            android:layout_alignParentLeft="true"
+            android:layout_centerInParent="true"
+            android:onClick="back"/>
+        
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="这里是文章详情的标题"
+            android:layout_centerInParent="true"
+            android:textSize="15sp"/>
+    </RelativeLayout>
+    <WebView 
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/web_content"
+        android:layout_weight="1.0"/>
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@color/white"
+        android:orientation="horizontal">
+        <LinearLayout 
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:paddingLeft="10dp">
+            
+            <ImageView android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_action_write_normal"
+                android:layout_gravity="center"/>
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="写评论"
+                android:layout_gravity="center"
+                android:layout_marginLeft="5dp"/>
+        </LinearLayout>
+        <LinearLayout 
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.0"
+            android:orientation="horizontal"
+            android:gravity="center"
+            >
+            <ImageView android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_action_favor_normal"
+                android:layout_weight="1.0"/>
+             <ImageView android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_action_favor_normal"
+                android:layout_weight="1.0"/>
+             <ImageView android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_action_favor_normal"
+                android:layout_weight="1.0"/>
+             <ImageView android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_action_favor_normal"
+                android:layout_weight="1.0"
+                android:id="@+id/share"/>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

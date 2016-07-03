@@ -1,0 +1,409 @@
+package net.bangbao.ui;
+
+import io.rong.imlib.RongIMClient;
+import io.rong.imlib.RongIMClient.ConnectCallback;
+
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
+
+import net.bangbao.AppConfig;
+import net.bangbao.R;
+import net.bangbao.UserConfig;
+import net.bangbao.base.BaseActivity;
+import net.bangbao.base.BaseApi;
+import net.bangbao.common.EditTextWatcher;
+import net.bangbao.common.Ids;
+import net.bangbao.common.UIHelper;
+import net.bangbao.dao.LoginUserApi;
+import net.bangbao.dao.User.RegisterStruct;
+import net.bangbao.network.ApiClient;
+import net.bangbao.utils.EncryptionUtils;
+import net.bangbao.widget.SegmentedGroup;
+import net.bangbao.widget.SpinnerDropDown;
+import net.bangbao.widget.SpinnerDropDown.IOnClickItemListener;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow.OnDismissListener;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.TextView;
+
+
+/*
+ *  author:mosl
+ *  descrsion:注册界面(无参)
+ */
+public class RegisterActivity extends BaseActivity implements View.OnClickListener,
+                        ConnectCallback{
+	
+	private EditText mUserName;
+	private EditText mPassword;
+	private EditText mPasswordConform;
+	private SegmentedGroup mSegment;
+	private View mEnglishNameLayout,mCommsLayout,mPhoneLayout,mTuijianLayout;
+	private TextView mSegmentText;
+	private View mFramBack;
+	private int mCategryItem = 1;  //1 消费者 2 代理人
+	private EditText nm_en_edit;
+	private EditText ctt_edit,probs_ans;
+	private Button mComplete;
+	private View mServiceItem;
+	private LinearLayout mProsSetting;
+	private SpinnerDropDown mPassProblems;
+	private SpinnerDropDown spinnerDropDown;
+	private TextView mCommsText;
+	private TextView mCommsLabel;
+	private ImageView mImageArrow;
+	
+	List<String> items;
+	List<String> questions;
+	private TextView mPromsTextView;
+	private ImageView mPromsArrow;
+	/** 网络请求代理 **/
+	private ApiClient apiClient = new ApiClient();
+	private int mProbsId = 1;
+	private int mCommsId = 1;
+	
+	/**推荐人 **/
+	private EditText mrecommendEditText;
+	/** Loading 的对话框**/
+	private ProgressDialog mProgressBar;
+	private String mPassStr = "";
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_register);
+		initViews();
+		handleIntent();
+	}
+	
+	private void handleIntent() {
+		int item = getIntent().getIntExtra("item",0);
+		switch (item) {
+		case 0:
+			mSegment.check(R.id.customer_reg);
+			break;
+		default:
+			mSegment.check(R.id.custom_reg);
+			break;
+		}
+	}
+
+	private void initViews() {
+		
+		mProgressBar = new ProgressDialog(this);
+		mrecommendEditText = (EditText)findViewById(R.id.tuijianren_edit);
+		questions = Ids.getPassAnswer();
+		mCommsText = (TextView)findViewById(R.id.comms_text);
+		mProsSetting = (LinearLayout)findViewById(R.id.pros_setting);
+		mCommsLabel = (TextView)findViewById(R.id.comms_label);
+		mImageArrow = (ImageView)findViewById(R.id.comms_arrow);
+		mProsSetting.setOnClickListener(this);
+		mTuijianLayout = findViewById(R.id.tuijianren_layout);
+		mSegment = (SegmentedGroup)findViewById(R.id.segmented_reg);
+		mEnglishNameLayout = findViewById(R.id.english_name_layout);
+		mCommsLayout = findViewById(R.id.comm_layout);
+		mCommsLayout.setOnClickListener(this);
+		mPhoneLayout = findViewById(R.id.phone_layout);
+		mFramBack = findViewById(R.id.fram_back);
+		nm_en_edit = (EditText)findViewById(R.id.english_username_edit);
+		ctt_edit = (EditText)findViewById(R.id.ctt_phone);
+		probs_ans = (EditText)findViewById(R.id.probs_ans);
+		mComplete = (Button)findViewById(R.id.complete);
+		mComplete.setOnClickListener(this);
+		mFramBack.setOnClickListener(this);
+		mPromsTextView = (TextView)findViewById(R.id.question_text);
+		mPromsArrow = (ImageView)findViewById(R.id.probs_arrow);
+		mSegment.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(RadioGroup group, int checkedId) {
+
+				mUserName.setText("");
+				mPassword.setText("");
+				mPasswordConform.setText("");
+				nm_en_edit.setText("");
+				ctt_edit.setText("");
+				probs_ans.setText("");
+				switch (checkedId) {
+				case R.id.customer_reg:
+					mEnglishNameLayout.setVisibility(View.GONE);
+					mCommsLayout.setVisibility(View.GONE);
+					mPhoneLayout.setVisibility(View.GONE);
+					mTuijianLayout.setVisibility(View.GONE);
+					mSegmentText.setText("客户注册");
+					mCategryItem = 1;
+					break;
+
+				default:
+					mEnglishNameLayout.setVisibility(View.VISIBLE);
+					mCommsLayout.setVisibility(View.VISIBLE);
+					mPhoneLayout.setVisibility(View.VISIBLE);
+					mTuijianLayout.setVisibility(View.VISIBLE);
+					mSegmentText.setText("保险顾问注册");
+					mCategryItem = 2;
+					break;
+				}
+			}
+		});
+		mSegmentText = (TextView)findViewById(R.id.register_text);
+		mUserName = (EditText)findViewById(R.id.text_username);
+		mPassword = (EditText)findViewById(R.id.text_password);
+		items = Ids.getCommlist();
+		mPasswordConform = (EditText)findViewById(R.id.password_conform);
+		mServiceItem = findViewById(R.id.service_item);
+		mServiceItem.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(RegisterActivity.this,
+						BangBaoServiceItemActivity.class));
+			}
+		});
+		initTextWatcher();
+	}
+
+	private void initTextWatcher() {
+       mUserName.addTextChangedListener(new EditTextWatcher(mUserName,1));
+       nm_en_edit.addTextChangedListener(new EditTextWatcher(nm_en_edit,1));
+	   mrecommendEditText.addTextChangedListener(new EditTextWatcher(mrecommendEditText, 0));
+	   ctt_edit.addTextChangedListener(new EditTextWatcher(ctt_edit, 0));
+	   probs_ans.addTextChangedListener(new EditTextWatcher(probs_ans,0));
+	   mPasswordConform.addTextChangedListener(new EditTextWatcher(mPasswordConform, 1));
+	   mPassword.addTextChangedListener(new EditTextWatcher(mPassword, 1));
+	}
+
+	/**完成**/
+	public void mComplete(){
+		if(mUserName.getText().toString().trim().length() ==0
+				||mPassword.getText().toString().trim().length() == 0){
+			UIHelper.showToastMessage("用户名或密码不能为空");
+			return;
+		}
+		if(mUserName.getText().toString().trim().length() <6
+				||mUserName.getText().toString().trim().length() >16){
+			UIHelper.showToastMessage("用户名长度应该是6-16");
+			return;
+		}
+		if(mPassword.getText().toString().trim().length() <6
+				||mPassword.getText().toString().trim().length() >16){
+			UIHelper.showToastMessage("密码长度应该是6-16");
+			return;
+		}
+		if(!mPassword.getText().toString().trim().endsWith(mPasswordConform.getText().toString().trim())){
+			UIHelper.showToastMessage("两次密码输入不一致");
+			return;
+		}
+		if(probs_ans.getText().toString().trim().length() > 80){
+			UIHelper.showToastMessage("答案最长为80个字符");
+			return;
+		}
+		RegisterStruct registerStruct = new RegisterStruct();
+		registerStruct.type = mCategryItem;
+		String username = mUserName.getText().toString().trim();
+		/**密码MD5加密**/
+		try {
+			mPassStr= EncryptionUtils.string2MD5(mPassword.getText().toString().trim()) ;
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		registerStruct.name = username;
+		registerStruct.pwd = mPassStr;
+		registerStruct.prob_ans = probs_ans.getText().toString().trim();
+		registerStruct.prob_id = mProbsId;
+		registerStruct.co_id = mCommsId;
+		
+		if(mCategryItem == 1){
+			registerStruct.nm_en = mUserName.getText().toString().trim();
+		}
+		if(mCategryItem == 2){
+			if( nm_en_edit.getText().toString().trim().length() == 0){
+				UIHelper.showToastMessage("英文名不能为空");
+				return;
+			}
+			if(ctt_edit.getText().toString().trim().length() == 0){
+				UIHelper.showToastMessage("联系方式不能为空");
+				return;
+			}
+			if(mrecommendEditText.getText().toString().trim().length() >0){
+				registerStruct.orig_user_nm = mrecommendEditText.getText().toString().trim();
+			}
+			registerStruct.ctt = ctt_edit.getText().toString().trim();
+			registerStruct.nm_en = nm_en_edit.getText().toString().trim();
+		}
+		
+		if(probs_ans.getText().toString().trim().length() ==0){
+			UIHelper.showToastMessage("答案不能为空");
+			return;
+		}
+		
+		mComplete.setEnabled(false);
+		mProgressBar.show();
+		apiClient.registerUser(registerStruct,
+				this, BaseApi.class,new ApiClient.CallBack<BaseApi>(){
+
+			@Override
+			public void success(BaseApi api) {
+				mComplete.setEnabled(true);
+				if(api == null) return;
+				if(api.getRet_cd() == 0){
+					UIHelper.showToastMessage(
+							"注册成功！");
+					/**去登陆 **/
+					gotoLogin();
+				}
+				
+				if(api.getRet_cd() !=0){
+					UIHelper.showToastMessage(
+							api.getRet_txt());
+					mProgressBar.dismiss();
+				}
+			}
+
+			@Override
+			public void fail(String error) {
+				UIHelper.showToastMessage(
+						"当前网络有问题！");
+				mComplete.setEnabled(true);
+				mProgressBar.dismiss();
+			}
+			
+		});
+		
+	}
+	/**注册完之后，登陆一次 **/
+	private void gotoLogin(){
+		apiClient.loginUser(mUserName.getText().toString(), mPassStr , 
+				this, LoginUserApi.class, new ApiClient.CallBack<LoginUserApi>() {
+
+					@Override
+					public void success(LoginUserApi api) {
+						
+						if(api.getRet_cd() == 0){
+							/**登陆成功 ，保存信息 **/
+							AppConfig.login();
+							UserConfig user = new UserConfig();
+							user.setUserId(api.getUser_id());
+							user.setUserToken(String.valueOf(api.getToken()));
+							user.setUserName(mUserName.getText().toString());
+							/**保存登录人员类型**/
+							user.setType(api.getType());
+							AppConfig.putUser(user);
+							AppConfig.saveRongYunToken(api.getRc_token());
+							loginRongYun();
+							
+						}else if(api.getRet_cd() != 0){
+							UIHelper.showToastMessage(api.getRet_txt());
+							mProgressBar.dismiss();
+						}
+						
+					}
+					@Override
+					public void fail(String error) {
+						
+						UIHelper.showToastMessage(
+								"当前网络有问题！");
+						mProgressBar.dismiss();
+					}
+				});
+	}
+	
+	/** 登陆融云 **/
+	protected void loginRongYun() {
+		try {
+			
+			AppConfig.IMClient = RongIMClient.connect(AppConfig.getRongYunToken(), this);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**点击事件 **/
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.pros_setting:
+			mPromsArrow.setImageResource(R.drawable.arrow_up);
+			mProsSetting.setBackgroundResource(R.drawable.layout_comms_up);
+			mPassProblems = new SpinnerDropDown(questions, this, v.getMeasuredWidth(), 
+					new IOnClickItemListener() {
+						@Override
+						public void clickItem(int item) {
+							mProbsId = item + 1;
+							mPromsTextView.setText(questions.get(item));
+						}
+					},0);
+			mPassProblems.setOnDismissListener(new OnDismissListener() {
+				
+				@Override
+				public void onDismiss() {
+					mPromsArrow.setImageResource(R.drawable.bt_down);
+					mProsSetting.setBackgroundResource(R.drawable.layout_circle);
+				}
+			});
+			mPassProblems.showAsDropDown(v, 0, 0);
+			break;
+		case R.id.comm_layout:
+			if(spinnerDropDown != null && spinnerDropDown.isShowing()){
+				spinnerDropDown.dismiss();
+				return;
+			}
+			mCommsLayout.setBackgroundColor(Color.rgb(232, 245, 249));
+			mCommsLayout.setBackgroundResource(R.drawable.layout_comms_up);
+			mCommsLabel.setTextColor(Color.rgb(51, 153,255));
+			mImageArrow.setImageResource(R.drawable.arrow_up);
+			spinnerDropDown = new SpinnerDropDown(items,RegisterActivity.this,
+					v.getMeasuredWidth(), new IOnClickItemListener() {
+						
+						@Override
+						public void clickItem(int item) {
+							mCommsId = item + 1;
+							mCommsText.setText(items.get(item));
+						}
+					},1);
+			
+			spinnerDropDown.setOnDismissListener(new OnDismissListener() {
+				
+				@Override
+				public void onDismiss() {
+					mCommsLabel.setTextColor(Color.GRAY);
+					mImageArrow.setImageResource(R.drawable.bt_down);
+					mCommsLayout.setBackgroundResource(R.drawable.layout_circle);
+				}
+			});
+			spinnerDropDown.showAsDropDown(v, 0, 0);
+			break;
+		case R.id.fram_back:
+			finish();
+			break;
+		default:
+			mComplete();
+			break;
+		}
+	}
+
+	/**登陆融云失败 **/
+	@Override
+	public void onError(ErrorCode arg0) {
+		
+	}
+	
+	/**登陆融云 成功 **/
+	@Override
+	public void onSuccess(String arg0) {
+		Intent intent = new Intent(RegisterActivity.this,
+				MainActivity.class);
+		startActivity(intent);
+		mProgressBar.dismiss();
+		finish();
+	}
+}

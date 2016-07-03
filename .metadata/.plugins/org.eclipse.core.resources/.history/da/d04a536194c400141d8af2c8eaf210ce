@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 样式 -->
+<resources>
+    <style name="AnimationFade">  
+  
+    <!-- PopupWindow左右弹出的效果 -->  
+    <item name="android:windowEnterAnimation">@anim/in_bottomtoup</item>  
+    <item name="android:windowExitAnimation">@anim/out_rightltoleft</item>  
+</style> 
+
+    <style name="Animation_dropdown" mce_bogus="1" parent="@android:style/Animation.Dialog">
+        <item name="android:windowEnterAnimation">@anim/popup_enter</item>
+        <item name="android:windowExitAnimation">@anim/popup_exit</item>
+    </style>
+</resources>

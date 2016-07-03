@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+    <ImageView 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/ad_head_image"
+        android:background="@drawable/news"
+        android:scaleType="matrix"/>
+    <TextView 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|left"
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="15dp"
+        android:id="@+id/text_head"
+        android:textColor="@color/white"
+        android:text="sdfsd"
+        android:maxLines="1"
+        android:textSize="@dimen/text_title"/>
+</FrameLayout>
